@@ -1,11 +1,10 @@
 // Vertex shader for procedural terrain
 precision highp float;
 
-attribute vec3 position;
-attribute vec2 uv;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
+// Built-in attributes/uniforms are injected by Three.js when using
+// ShaderMaterial, so we don't redeclare them here.
+// `position`, `uv`, `modelViewMatrix`, and `projectionMatrix` are available
+// automatically.
 uniform float uTime;
 
 varying vec2 vUv;

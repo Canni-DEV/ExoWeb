@@ -1,10 +1,8 @@
 precision highp float;
 
-attribute vec3 position;
-
-uniform mat4 modelViewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat4 modelMatrix;
+// Built-in attributes and matrices like `position`, `modelMatrix`,
+// `modelViewMatrix`, and `projectionMatrix` are injected automatically by
+// Three.js when using ShaderMaterial.
 
 varying vec3 vWorldPosition;
 
