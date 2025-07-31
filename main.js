@@ -1,7 +1,7 @@
-import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
-import { EffectComposer } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/UnrealBloomPass.js';
+import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js?module';
+import { EffectComposer } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/EffectComposer.js?module';
+import { RenderPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/RenderPass.js?module';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/UnrealBloomPass.js?module';
 
 let scene, camera, renderer, composer;
 let terrain, sky, clouds, sphere;
@@ -10,10 +10,26 @@ let velocity = new THREE.Vector3();
 let direction = new THREE.Vector3();
 const keys = {};
 
-init();
+const shaderPaths = {
+  terrainVertex: 'shaders/terrain.vert',
+  terrainFragment: 'shaders/terrain.frag',
+  skyVertex: 'shaders/sky.vert',
+  skyFragment: 'shaders/sky.frag',
+  cloudFragment: 'shaders/clouds.frag'
+};
+const shaders = {};
 
-function getShader(id) {
-  return document.getElementById(id).textContent.trim();
+loadShaders().then(init);
+
+async function loadShaders() {
+  const entries = await Promise.all(
+    Object.entries(shaderPaths).map(async ([key, url]) => {
+      const res = await fetch(url);
+      const text = await res.text();
+      return [key, text];
+    })
+  );
+  for (const [k, v] of entries) shaders[k] = v;
 }
 
 function init() {
@@ -32,8 +48,8 @@ function init() {
 
   const terrainGeom = new THREE.PlaneGeometry(2000, 2000, 256, 256);
   const terrainMaterial = new THREE.ShaderMaterial({
-    vertexShader: getShader('terrainVertex'),
-    fragmentShader: getShader('terrainFragment'),
+    vertexShader: shaders.terrainVertex,
+    fragmentShader: shaders.terrainFragment,
     uniforms: {
       uTime: { value: 0 },
       uColor: { value: new THREE.Color(0x553333) }
@@ -51,8 +67,8 @@ function init() {
 
   const skyGeom = new THREE.SphereGeometry(5000, 32, 15);
   const skyMat = new THREE.ShaderMaterial({
-    vertexShader: getShader('skyVertex'),
-    fragmentShader: getShader('skyFragment'),
+    vertexShader: shaders.skyVertex,
+    fragmentShader: shaders.skyFragment,
     uniforms: {
       topColor: { value: new THREE.Color(0xffaa88) },
       bottomColor: { value: new THREE.Color(0x221122) }
@@ -66,7 +82,7 @@ function init() {
   const cloudGeom = new THREE.PlaneGeometry(1000, 1000, 1, 1);
   const cloudMat = new THREE.ShaderMaterial({
     vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
-    fragmentShader: getShader('cloudFragment'),
+    fragmentShader: shaders.cloudFragment,
     transparent: true,
     depthWrite: false,
     uniforms: {
