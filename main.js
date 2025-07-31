@@ -1,7 +1,7 @@
-import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js?module';
-import { EffectComposer } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/EffectComposer.js?module';
-import { RenderPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/RenderPass.js?module';
-import { UnrealBloomPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/UnrealBloomPass.js?module';
+import * as THREE from 'https://unpkg.com/three@0.150.1/build/three.module.js';
+import { EffectComposer } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.150.1/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 let scene, camera, renderer, composer;
 let terrain, sky, clouds, sphere;
