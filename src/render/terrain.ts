@@ -37,6 +37,7 @@ export class TerrainRenderer {
   private nearMaterial: NodeMaterial;
   private farMaterial: NodeMaterial;
   private geometries = new Map<number, PlaneGeometry>();
+  private nearPool: PlaneGeometry[] = [];
   constructor(
     private scene: Scene,
     private stream: TerrainStream,
@@ -102,21 +103,30 @@ export class TerrainRenderer {
     for (const [key, p] of this.patches)
       if (!wanted.has(key)) {
         this.scene.remove(p.mesh);
-        if (p.near) p.mesh.geometry.dispose();
+        if (p.near) this.nearPool.push(p.mesh.geometry as PlaneGeometry);
         this.patches.delete(key);
       }
     for (const [key, p] of wanted)
       if (!this.patches.has(key)) {
         let geometry: PlaneGeometry;
         if (p.near) {
-          geometry = new PlaneGeometry(TILE_SIZE, TILE_SIZE, 256, 256);
-          geometry.rotateX(-Math.PI / 2);
-          geometry.translate(128, 0, 128);
-          geometry.setAttribute(
-            'height',
-            new BufferAttribute(this.stream.tiles.get(tileKey(p.x, p.z))!.data, 1),
-          );
-          this.addSkirts(geometry, 256);
+          const heights = this.stream.tiles.get(tileKey(p.x, p.z))!.data;
+          const reused = this.nearPool.pop();
+          if (reused) {
+            geometry = reused;
+            const attribute = geometry.getAttribute('height');
+            attribute.array.set(heights);
+            const perimeter = geometry.userData.perimeter as number[];
+            for (let i = 0; i < perimeter.length; i++)
+              attribute.array[heights.length + i] = heights[perimeter[i]];
+            attribute.needsUpdate = true;
+          } else {
+            geometry = new PlaneGeometry(TILE_SIZE, TILE_SIZE, 256, 256);
+            geometry.rotateX(-Math.PI / 2);
+            geometry.translate(128, 0, 128);
+            geometry.setAttribute('height', new BufferAttribute(heights, 1));
+            this.addSkirts(geometry, 256);
+          }
         } else {
           geometry = this.geometries.get(p.size)!;
           if (!geometry) {
@@ -170,6 +180,7 @@ export class TerrainRenderer {
     }
     geometry.setIndex(indices);
     geometry.userData.size = size;
+    geometry.userData.perimeter = perimeter;
   }
   rebase() {
     for (const p of this.patches.values())
@@ -182,6 +193,7 @@ export class TerrainRenderer {
   get vertices() {
     let count = 0;
     for (const p of this.patches.values()) count += p.mesh.geometry.getAttribute('position').count;
+    for (const g of this.nearPool) count += g.getAttribute('position').count;
     return count;
   }
   dispose() {
@@ -190,6 +202,8 @@ export class TerrainRenderer {
       if (p.near) p.mesh.geometry.dispose();
     }
     for (const g of this.geometries.values()) g.dispose();
+    for (const g of this.nearPool) g.dispose();
+    this.nearPool = [];
     this.nearMaterial.dispose();
     this.farMaterial.dispose();
     this.patches.clear();

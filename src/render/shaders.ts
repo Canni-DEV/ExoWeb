@@ -36,25 +36,47 @@ export const aerial = shader<'vec3'>(
   [skyColor],
 );
 
+const terrainDetail = shader<'vec3'>(
+  `fn exoTerrainDetail(p:vec3f,blend:vec3f,footprint:f32)->vec3f {
+ var detail=vec3f(0.5);
+ let scales=vec3f(0.45,2.7,14.0);
+ for(var i=0;i<3;i++) {
+  let q=p*scales[i];
+  let n=exoNoise(q.yz)*blend.x+exoNoise(q.xz)*blend.y+exoNoise(q.xy)*blend.z;
+  let coverage=1.0-smoothstep(0.3,1.1,footprint*scales[i]);
+  detail[i]=mix(0.5,n,coverage);
+ }
+ return detail;
+}`,
+  [noise2],
+);
+
 export const terrainColor = shader<'vec3'>(
   `fn exoTerrainColor(p: vec3f, eye: vec3f, sun: vec3f, storm: f32, ship:vec3f) -> vec3f {
  var n=normalize(cross(dpdy(p),dpdx(p))); if(n.y<0.0){n=-n;}
  let weights=pow(abs(n),vec3f(4.0)); let blend=weights/(weights.x+weights.y+weights.z);
- let detail=exoNoise(p.yz*0.12)*blend.x+exoNoise(p.xz*0.12)*blend.y+exoNoise(p.xy*0.12)*blend.z;
+ let footprint=max(length(dpdx(p)),length(dpdy(p)));
+ let detail=exoTerrainDetail(p,blend,footprint);
+ let relief=detail.x*0.13+detail.y*0.035+detail.z*0.008;
+ let dx=dpdx(p);let dy=dpdy(p);
+ let r1=cross(dy,n);let r2=cross(n,dx);let determinant=dot(dx,r1);
+ let gradient=(r1*dpdx(relief)+r2*dpdy(relief))/max(abs(determinant),0.000001)*sign(determinant);
+ let materialNormal=normalize(n-gradient*1.5);
  let bands=exoNoise(p.xz*0.0009);
  let rock=mix(vec3f(0.08,0.115,0.13),vec3f(0.29,0.20,0.14),bands);
  let sand=vec3f(0.46,0.33,0.20);
  var col=mix(rock,sand,(1.0-smoothstep(12.0,130.0,p.y))*smoothstep(0.75,0.98,n.y));
  let snow=smoothstep(2000.0,2900.0,p.y+bands*400.0)*smoothstep(0.6,0.95,n.y);
  col=mix(col,vec3f(0.62,0.72,0.72),snow);
- col*=mix(0.68,1.15,detail);
+ let grains=smoothstep(0.25,0.73,detail.y);
+ col*=0.58+detail.x*0.52+grains*0.30+detail.z*0.15;
  col*=mix(0.4,1.0,smoothstep(-2.0,18.0,p.y));
  let cloudShadow=mix(0.55,1.0,smoothstep(0.3,0.65,exoNoise(p.xz*0.00016+vec2f(13.0))));
- let light=0.24+max(0.0,dot(n,sun))*1.15*cloudShadow*(1.0-storm*0.4);
+ let light=0.20+max(0.0,dot(materialNormal,sun))*1.15*cloudShadow*(1.0-storm*0.4);
  let contactShadow=1.0-0.7*exp(-dot(p.xz-ship.xz,p.xz-ship.xz)/10.0)*exp(-max(0.0,ship.y-p.y-2.5)/8.0);
  return exoAerial(col*light*contactShadow,p,eye,sun,storm);
 }`,
-  [noise2, aerial],
+  [noise2, aerial, terrainDetail],
 );
 
 export const noise3 = shader<'float'>(

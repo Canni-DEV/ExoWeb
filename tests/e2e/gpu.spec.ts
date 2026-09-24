@@ -62,6 +62,13 @@ test.describe('real WebGPU acceptance', () => {
     );
     await page.locator('#resume').click();
     await page.waitForFunction(() => window.__EXOWEB_TEST__?.snapshot().playing);
+    await page.keyboard.down('Control');
+    await expect(page.locator('#form-label')).toHaveText('DISCO');
+    await expect(page.locator('#energy-state')).not.toBeEmpty();
+    await page.keyboard.down('Shift');
+    await expect(page.locator('#form-label')).toHaveText('ESFERA');
+    await page.keyboard.up('Shift');
+    await page.keyboard.up('Control');
   });
   test('standard gamepad movement and disconnection are handled', async ({ page }) => {
     await page.addInitScript(() => {
@@ -94,6 +101,48 @@ test.describe('real WebGPU acceptance', () => {
     await expect(page.locator('#pause-screen')).toBeVisible();
     await expect(page.locator('#notice')).toContainText('Mando desconectado');
   });
+  test('active traversal crosses sectors with coherent contact and GPU state', async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    page.on('console', (m) => {
+      if (m.type() === 'error') errors.push(m.text());
+    });
+    await page.goto('./?test=1');
+    await page.getByRole('button', { name: 'Iniciar expedición', exact: true }).click();
+    await page.waitForFunction(() => window.__EXOWEB_TEST__?.snapshot().playing);
+    await page.evaluate(() => window.__EXOWEB_TEST__!.beginBenchmark());
+    await page.keyboard.down('w');
+    await expect
+      .poll(async () => page.evaluate(() => window.__EXOWEB_TEST__!.snapshot().player.time), {
+        timeout: 30000,
+        intervals: [200],
+      })
+      .toBeGreaterThan(12);
+    await page.keyboard.up('w');
+    const state = await page.evaluate(() => window.__EXOWEB_TEST__!.snapshot());
+    expect(state.player.position.z).toBeLessThan(-300);
+    expect(Number.isFinite(state.player.velocity.y)).toBe(true);
+    expect(await page.evaluate(() => window.__EXOWEB_TEST__!.seamError())).toBeLessThan(0.05);
+    expect(errors).toEqual([]);
+    const sorted = state.frames.toSorted((a, b) => a - b);
+    const report = {
+      adapter: state.adapter,
+      frames: sorted.length,
+      fps: 1000 / (sorted.reduce((a, b) => a + b, 0) / sorted.length),
+      p95: sorted[Math.floor(sorted.length * 0.95)],
+      maximum: sorted.at(-1),
+      slowFrames: state.frames.flatMap((ms, index) => (ms > 25 ? [{ index, ms }] : [])),
+      memoryMiB: state.memoryMiB,
+      player: state.player,
+    };
+    await writeFile(testInfo.outputPath('traversal.json'), JSON.stringify(report, null, 2));
+    await page.screenshot({ path: testInfo.outputPath('moving-terrain.png') });
+    console.log('Active traversal', JSON.stringify(report));
+  });
+
   test('10 minute 1080p visual benchmark', async ({ page, browser }, testInfo) => {
     test.skip(process.env.BENCHMARK_SECONDS === undefined, 'Opt-in sustained GPU benchmark.');
     const seconds = Number(process.env.BENCHMARK_SECONDS ?? 600);

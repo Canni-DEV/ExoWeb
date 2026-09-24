@@ -1,6 +1,6 @@
 import { PHYSICS, WORLD } from '../config';
 import type { InputFrame, PlayerState, Vec3, WorldSampler } from '../types';
-import { clamp, dot, length, normalize } from './math';
+import { clamp, dot, length, normalize, smooth } from './math';
 
 export const createPlayer = (position: Vec3): PlayerState => ({
   position: { ...position },
@@ -11,6 +11,11 @@ export const createPlayer = (position: Vec3): PlayerState => ({
   morph: 0,
   contact: 'air',
   time: 0,
+  clearance: 0,
+  energySource: 'idle',
+  glideLocked: false,
+  jumpBuffer: 0,
+  groundGrace: 0,
 });
 export const clonePlayer = (p: PlayerState): PlayerState => ({
   ...p,
@@ -29,6 +34,9 @@ export const isPlayerFinite = (p: PlayerState) =>
     p.time,
     p.yaw,
     p.morph,
+    p.clearance,
+    p.jumpBuffer,
+    p.groundGrace,
   ].every(Number.isFinite);
 export interface PhysicsEvents {
   impact: number;
@@ -58,20 +66,59 @@ export function simulate(
   const beforeSpeed = length(p.velocity);
   p.time += dt;
   p.yaw = input.yaw;
+  const groundHere = world.surface(p.position.x, p.position.z),
+    waterHere = world.water(p.position.x, p.position.z, p.time);
+  const overWater = waterHere.height > groundHere.height;
+  const support = overWater ? waterHere : groundHere;
+  p.clearance = Math.max(0, p.position.y - PHYSICS.radius - support.height);
+  // Keep support through the collision skin. It used to remove traction every other step.
+  const grounded = p.clearance <= PHYSICS.supportDistance && dot(p.velocity, support.normal) < 0.8;
+  p.contact = grounded ? (overWater ? 'water' : 'ground') : 'air';
+  p.groundGrace = grounded ? PHYSICS.coyoteTime : Math.max(0, p.groundGrace - dt);
+  p.jumpBuffer = input.jump ? PHYSICS.jumpBuffer : Math.max(0, p.jumpBuffer - dt);
+  if (p.energy >= PHYSICS.glideRestartEnergy) p.glideLocked = false;
   const previousForm = p.form;
-  p.form = input.glide && !input.gravity && p.energy > 0 ? 'disc' : 'sphere';
-  p.morph += ((p.form === 'disc' ? 1 : 0) - p.morph) * (1 - Math.exp(-12 * dt));
-  events.transformed = previousForm !== p.form;
-  const grounded = p.contact !== 'air';
+  p.form = input.glide && !input.gravity && p.energy > 0 && !p.glideLocked ? 'disc' : 'sphere';
   const wind = world.wind(p.position);
+  const skimming =
+    p.form === 'disc' && p.clearance < 8 && Math.hypot(p.velocity.x, p.velocity.z) > 25;
+  const diving = input.gravity && !grounded && p.velocity.y < -10;
+  p.energySource = grounded
+    ? overWater
+      ? 'water'
+      : 'ground'
+    : wind.y > 3
+      ? 'thermal'
+      : skimming
+        ? 'skim'
+        : diving
+          ? 'dive'
+          : p.form === 'disc'
+            ? 'glide'
+            : p.energy === 0
+              ? 'empty'
+              : 'idle';
+  const recharge = grounded
+    ? PHYSICS.recharge
+    : wind.y > 3
+      ? PHYSICS.thermalRecharge
+      : skimming
+        ? PHYSICS.skimRecharge
+        : diving
+          ? PHYSICS.diveRecharge
+          : 0;
   p.energy = clamp(
-    p.energy +
-      (grounded ? PHYSICS.recharge : wind.y > 3 ? PHYSICS.thermalRecharge : 0) * dt -
-      (p.form === 'disc' ? PHYSICS.energyDrain * dt : 0),
+    p.energy + (recharge - (p.form === 'disc' && !grounded ? PHYSICS.energyDrain : 0)) * dt,
     0,
     100,
   );
-  if (p.energy === 0) p.form = 'sphere';
+  if (p.energy === 0) {
+    p.form = 'sphere';
+    p.glideLocked = true;
+    p.energySource = 'empty';
+  }
+  p.morph += ((p.form === 'disc' ? 1 : 0) - p.morph) * (1 - Math.exp(-12 * dt));
+  events.transformed = previousForm !== p.form;
   const v = p.velocity;
   const moveLength = Math.hypot(input.moveX, input.moveZ);
   const mx = input.moveX / Math.max(1, moveLength),
@@ -81,10 +128,12 @@ export function simulate(
     y: 0,
     z: -mx * Math.sin(input.yaw) - mz * Math.cos(input.yaw),
   };
-  if (grounded && input.jump) {
+  if (p.groundGrace > 0 && p.jumpBuffer > 0) {
     v.y = Math.max(0, v.y) + PHYSICS.jumpSpeed;
     p.position.y += 0.12;
     p.contact = 'air';
+    p.groundGrace = 0;
+    p.jumpBuffer = 0;
   }
   const gravity = PHYSICS.gravity * (input.gravity ? PHYSICS.gravityMultiplier : 1);
   v.y -= gravity * dt;
@@ -94,10 +143,12 @@ export function simulate(
         ? world.surface(p.position.x, p.position.z).normal
         : { x: 0, y: 1, z: 0 };
     const projection = dot(wish, normal);
-    v.x += (wish.x - normal.x * projection) * PHYSICS.groundAcceleration * dt;
-    v.y += -normal.y * projection * PHYSICS.groundAcceleration * dt;
-    v.z += (wish.z - normal.z * projection) * PHYSICS.groundAcceleration * dt;
-    const drag = Math.exp(-(p.contact === 'water' ? 0.25 : 0.025) * dt);
+    const acceleration =
+      PHYSICS.groundAcceleration + PHYSICS.lowSpeedAssist * (1 - smooth(15, 65, beforeSpeed));
+    v.x += (wish.x - normal.x * projection) * acceleration * dt;
+    v.y += -normal.y * projection * acceleration * dt;
+    v.z += (wish.z - normal.z * projection) * acceleration * dt;
+    const drag = Math.exp(-(p.contact === 'water' ? 0.12 : 0.018) * dt);
     v.x *= drag;
     v.z *= drag;
   } else if (p.form === 'disc') {
@@ -111,9 +162,29 @@ export function simulate(
       v.x = Math.sin(heading) * horizontal;
       v.z = -Math.cos(heading) * horizontal;
     }
-    const lift = Math.min(gravity * 0.93, horizontal * horizontal * 0.0024);
-    v.y += lift * dt;
-    v.y *= Math.exp(-0.16 * dt);
+    // Redirect descent momentum into forward travel, preserving speed before drag.
+    // This is an arcade glider, not an engine adding thrust in mid-air.
+    if (v.y < 0) {
+      const total = length(v),
+        angle = Math.atan2(v.y, horizontal);
+      const targetAngle = -0.035;
+      const recovered = Math.min(
+        targetAngle,
+        angle + PHYSICS.diveRecoveryRate * smooth(12, 60, total) * dt,
+      );
+      if (recovered > angle) {
+        const heading =
+          horizontal > 0.1
+            ? Math.atan2(v.x, -v.z)
+            : moveLength > 0.05
+              ? Math.atan2(wish.x, -wish.z)
+              : -input.yaw;
+        const h = total * Math.cos(recovered);
+        v.x = Math.sin(heading) * h;
+        v.z = -Math.cos(heading) * h;
+        v.y = Math.sin(recovered) * total;
+      }
+    }
     const drag = Math.exp(-0.008 * dt);
     v.x *= drag;
     v.z *= drag;
@@ -138,7 +209,7 @@ export function simulate(
   // Sweep at <= 1 m intervals so the 1 m canonical height field cannot be skipped.
   const steps = Math.max(1, Math.ceil(length(v) * dt));
   const h = dt / steps;
-  p.contact = 'air';
+  // Retain support until a query actually detects separation, not merely the skin gap.
   for (let i = 0; i < steps; i++) {
     const old = { ...p.position };
     const target = { x: old.x + v.x * h, y: old.y + v.y * h, z: old.z + v.z * h };
@@ -146,6 +217,7 @@ export function simulate(
       water = world.water(target.x, target.z, p.time);
     const isWater = water.height > terrain.height;
     const surface = isWater ? water : terrain;
+    if (target.y - PHYSICS.radius - surface.height > PHYSICS.supportDistance) p.contact = 'air';
     if (target.y - PHYSICS.radius < surface.height) {
       let lo = 0,
         hi = 1;
@@ -161,6 +233,10 @@ export function simulate(
       }
       const impact = Math.max(0, -dot(v, surface.normal));
       events.impact = Math.max(events.impact, impact);
+      // Brief touchdowns and water skips are enough to prepare the next glide.
+      p.energy = 100;
+      p.glideLocked = false;
+      p.energySource = isWater ? 'water' : 'ground';
       const horizontal = Math.hypot(v.x, v.z);
       if (
         isWater &&
@@ -173,6 +249,8 @@ export function simulate(
         v.x *= 0.97;
         v.z *= 0.97;
         events.splash = true;
+        p.contact = 'air';
+        p.groundGrace = 0;
       } else {
         const vn = dot(v, surface.normal);
         if (vn < 0) {

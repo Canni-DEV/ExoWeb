@@ -70,7 +70,10 @@ export class Engine {
   private alive = true;
   onLost: (message: string) => void = () => {};
   onStats: (diagnostics: Diagnostics) => void = () => {};
-  private constructor(canvas: HTMLCanvasElement, device: GPUDevice) {
+  private constructor(
+    canvas: HTMLCanvasElement,
+    private device: GPUDevice,
+  ) {
     this.renderer = new WebGPURenderer({
       canvas,
       device,
@@ -206,6 +209,12 @@ export class Engine {
   invalidate() {
     this.pipeline.invalidate();
   }
+  async prepare(snapshot: RenderSnapshot, settings: Settings) {
+    // Compile/upload while the loading screen is visible, before accepting controls.
+    this.render(snapshot, settings, false);
+    await this.device.queue.onSubmittedWorkDone();
+    this.invalidate();
+  }
   private resize(quality: Quality) {
     const width = Math.max(2, Math.floor(window.innerWidth * this.scale)),
       height = Math.max(2, Math.floor(window.innerHeight * this.scale));
@@ -241,7 +250,7 @@ export class Engine {
     u.time.value = p.time;
     u.ship.value.set(p.position.x, p.position.y, p.position.z);
     u.exposure.value = damp(u.exposure.value, 1.08 + storm * 0.25, 0.5, dt);
-    u.blur.value = settings.comfort ? 0 : 0.45;
+    u.blur.value = settings.comfort ? 0 : 0.18 * smooth(60, 280, speed);
     const yaw = snapshot.cameraYaw,
       pitch = snapshot.cameraPitch;
     if (Math.abs(yaw - this.previousYaw) > 0.3 || Math.abs(pitch - this.previousPitch) > 0.2)

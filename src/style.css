@@ -552,6 +552,19 @@ h2 {
   font-size: 8px;
   color: #bed7cf;
 }
+#energy-state {
+  display: block;
+  margin-top: 6px;
+  white-space: nowrap;
+  font-size: 9px;
+  letter-spacing: 0.09em;
+}
+#energy-fill[data-level='low'] {
+  background: #edb074;
+}
+#energy-fill[data-level='charging'] {
+  background: #a5edd3;
+}
 .stage {
   display: flex;
   flex-direction: column;

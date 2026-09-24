@@ -24,6 +24,8 @@ FixedClock integra a 120 Hz y permite hasta 12 pasos por frame. Volver de una pe
 
 La nave utiliza un volumen conservador esférico de radio 2.5 m durante ambas formas. Esto evita penetraciones durante el morph. La forma de disco modifica sustentación y resistencia; no es un simulador aerodinámico de un disco rígido. La dirección en vuelo rota el impulso horizontal sin añadir energía. La gravedad intensificada tiene prioridad sobre el planeo.
 
+Desde el ajuste 2, el disco redirige gradualmente la velocidad descendente hacia delante, conservando su módulo antes de aplicar resistencia. El apoyo se mantiene dentro de un margen de 6 cm; salto anticipado (160 ms) y tolerancia de borde (100 ms) evitan perder pulsaciones por un cambio de contacto. La energía usa recarga de contacto, térmicas, rasante y picado, con histéresis tras agotarse. Valores y justificación en `FLIGHT_AND_TUNING.md`.
+
 Las colisiones barren el desplazamiento en intervalos máximos de 1 m y refinan el contacto con ocho iteraciones. Se proyecta la velocidad sobre la superficie. Los cinco pilares tienen colisión radial próxima. Los límites del mundo y estados no finitos recuperan al jugador desde el checkpoint.
 
 El océano usa tres ondas Gerstner con inversión aproximada del desplazamiento horizontal en CPU y WGSL. El disco rebota con velocidad horizontal >30 m/s e incidencia <20°. La alternativa es flotar y saltar de nuevo, evitando un estado de bloqueo en mar abierto. Los volúmenes de térmicas están declarados una vez y también generan el código de densidad de las columnas de nube.

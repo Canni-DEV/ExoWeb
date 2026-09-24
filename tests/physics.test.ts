@@ -103,13 +103,15 @@ describe('craft mechanics', () => {
     const thermal = { ...flat, wind: () => ({ x: 0, y: 30, z: 0 }) };
     simulate(p, idle, thermal, PHYSICS.step);
     expect(p.energy).toBeGreaterThan(20);
+    p.position.y = PHYSICS.radius + 0.01;
+    p.velocity = { x: 0, y: 0, z: 0 };
     p.contact = 'ground';
     const before = p.energy;
     simulate(p, idle, flat, PHYSICS.step);
-    expect(p.energy - before).toBeCloseTo(30 / 120, 5);
+    expect(p.energy - before).toBeCloseTo(PHYSICS.recharge / 120, 5);
   });
   it('does not permit repeated mid-air jumps', () => {
-    const p = createPlayer({ x: 500, y: 3, z: 0 });
+    const p = createPlayer({ x: 500, y: PHYSICS.radius + 0.005, z: 0 });
     p.contact = 'ground';
     simulate(p, { ...idle, jump: true }, flat, PHYSICS.step);
     const first = p.velocity.y;
@@ -177,5 +179,77 @@ describe('craft mechanics', () => {
       },
     };
     expect(simulate(p, idle, world, PHYSICS.step).invalid).toBe(true);
+  });
+});
+
+describe('momentum flow regressions', () => {
+  it('keeps traction through the contact skin and recovers speed from rest', () => {
+    const p = createPlayer({ x: 500, y: PHYSICS.radius + 0.005, z: 0 });
+    let grounded = 0;
+    for (let i = 0; i < 480; i++) {
+      simulate(p, { ...idle, moveZ: 1 }, flat, PHYSICS.step);
+      grounded += Number(p.contact === 'ground');
+    }
+    expect(grounded / 480).toBeGreaterThan(0.98);
+    expect(Math.hypot(p.velocity.x, p.velocity.z)).toBeGreaterThan(100);
+  });
+  it('redirects a dive into forward travel without creating mechanical energy', () => {
+    const p = createPlayer({ x: 500, y: 10000, z: 0 });
+    p.velocity = { x: 10, y: -180, z: 0 };
+    const energy = 0.5 * length(p.velocity) ** 2 + PHYSICS.gravity * p.position.y;
+    for (let i = 0; i < 120; i++) simulate(p, { ...idle, glide: true }, flat, PHYSICS.step);
+    expect(Math.hypot(p.velocity.x, p.velocity.z)).toBeGreaterThan(140);
+    expect(0.5 * length(p.velocity) ** 2 + PHYSICS.gravity * p.position.y).toBeLessThanOrEqual(
+      energy + 1,
+    );
+  });
+  it('recharges from a brief water skip instead of requiring a stop', () => {
+    const p = createPlayer({ x: 500, y: 2.52, z: 0 });
+    p.energy = 2;
+    p.velocity = { x: 100, y: -8, z: 0 };
+    simulate(p, { ...idle, glide: true }, ocean, PHYSICS.step);
+    expect(p.energy).toBe(100);
+    expect(p.velocity.y).toBeGreaterThan(0);
+  });
+  it('prevents empty-energy form flickering while recharging in a thermal', () => {
+    const p = createPlayer({ x: 500, y: 500, z: 0 });
+    p.energy = 0;
+    p.glideLocked = true;
+    const thermal = { ...flat, wind: () => ({ x: 0, y: 30, z: 0 }) };
+    let transitions = 0;
+    for (let i = 0; i < 120; i++) {
+      transitions += Number(
+        simulate(p, { ...idle, glide: true }, thermal, PHYSICS.step).transformed,
+      );
+      if (p.energy < 14) expect(p.form).toBe('sphere');
+    }
+    expect(transitions).toBe(1);
+    expect(p.form).toBe('disc');
+  });
+  it('recovers from low-speed floating without a thermal or external boost', () => {
+    const p = createPlayer({ x: 500, y: 2.505, z: 0 });
+    p.energy = 0;
+    for (let i = 0; i < 480; i++) simulate(p, { ...idle, moveZ: 1 }, ocean, PHYSICS.step);
+    expect(Math.abs(p.velocity.z)).toBeGreaterThan(80);
+    expect(p.energy).toBe(100);
+    simulate(p, { ...idle, jump: true }, ocean, PHYSICS.step);
+    expect(p.velocity.y).toBeGreaterThan(10);
+  });
+  it('buffers a jump just before touchdown', () => {
+    const p = createPlayer({ x: 500, y: 3.4, z: 0 });
+    p.velocity.y = -10;
+    simulate(p, { ...idle, jump: true }, flat, PHYSICS.step);
+    for (let i = 0; i < 14; i++) simulate(p, idle, flat, PHYSICS.step);
+    expect(p.velocity.y).toBeGreaterThan(10);
+  });
+  it('recharges during a gravity dive but not while idling in open air', () => {
+    const p = createPlayer({ x: 500, y: 5000, z: 0 });
+    p.energy = 0;
+    p.velocity.y = -20;
+    for (let i = 0; i < 120; i++) simulate(p, { ...idle, gravity: true }, flat, PHYSICS.step);
+    expect(p.energy).toBeCloseTo(PHYSICS.diveRecharge, 3);
+    const before = p.energy;
+    simulate(p, idle, flat, PHYSICS.step);
+    expect(p.energy).toBe(before);
   });
 });

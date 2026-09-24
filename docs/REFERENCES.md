@@ -13,6 +13,8 @@ Exo One, desarrollado por Exbleative, sirve como referencia de escala, atmósfer
 
 Las capturas se enlazan como referencia editorial; no se incluyen en el build.
 
+Para el ciclo de movimiento se consultó también la [explicación del creador con ejemplos de gravedad, planeo, térmicas y rebotes](https://www.exbleative.com/two-new-animated-gifs-of-exo-one-gameplay/), publicada durante el desarrollo en 2016. Las cifras de energía y aceleración de ExoWeb son ajustes propios; esa fuente no publica las ecuaciones finales del original.
+
 ## Fuentes técnicas
 
 - [Three.js WebGPURenderer](https://threejs.org/manual/pages/webgpurenderer): migración a nodos/TSL y nuevo pipeline.

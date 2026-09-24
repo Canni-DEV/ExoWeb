@@ -131,6 +131,10 @@ async function spawn(position?: Vec3) {
   input.yaw = 0;
   input.pitch = 0.15;
   engine.resetCamera(player.position, input.yaw);
+  await engine.prepare(
+    { player, cameraYaw: input.yaw, cameraPitch: input.pitch, checkpoint, completed, dt: 1 / 60 },
+    store.data.settings,
+  );
   loading = false;
   element('streaming').hidden = true;
 }

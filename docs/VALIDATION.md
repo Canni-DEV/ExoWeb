@@ -1,5 +1,23 @@
 # Registro de validación
 
+## Actualización: ajuste 2, 24 de septiembre de 2026
+
+Material próximo, contacto estable, recuperación de picados, recarga y guía contextual corregidos. **36 pruebas unitarias y 9 pruebas de navegador aprobadas**, incluyendo WebGPU real, controles de disco/gravedad y benchmark optativo de 60 segundos. Formato, lint, tipos y build correctos.
+
+El recorrido activo desde parado atravesó unos **1.11 km en 12.2 s**, sin cambiar de escena ni teletransportar: **143.9 FPS**, p95 **7.1 ms**, máximo **7.3 ms**, sin frames >25 ms en esa ejecución. Salida 1920×1080, perfil medio, RTX 5070 Ti, Chromium 153.0.8010.12. Memoria administrada estimada: 299.9 MiB. [Datos del recorrido](verification/tuning-v2/traversal-1080p.json).
+
+Una ejecución anterior había mostrado un tirón inicial de 253.8 ms. Se movió la preparación de shaders y buffers al estado de carga y se repitió la prueba: el informe anterior al cambio no se usa para declarar el tirón resuelto durante cualquier recorrido; el resultado nuevo acredita únicamente los 12.2 segundos medidos.
+
+Las seis vistas, durante aproximadamente diez segundos cada una, dieron **115.1–143.9 FPS**, p95 máximo **13.9 ms**, resolución interna final 100% en todas ellas. [Datos gráficos](verification/tuning-v2/benchmark-60s.json). La medición histórica de diez minutos que figura más abajo corresponde al motor anterior a estos ajustes.
+
+Comparación del suelo: [antes](verification/costa.png), [después](verification/tuning-v2/costa.png), [durante el recorrido](verification/tuning-v2/moving-terrain.png). El detalle visible se revisó en las capturas; el contacto y la conservación de energía tienen pruebas físicas. La sensación subjetiva y una partida completa todavía necesitan revisión con una persona.
+
+La nueva prueba de geometría desplaza la ventana de sectores varias veces, comprueba el reemplazo de alturas y faldas y confirma que se reutilizan nueve mallas. Las nuevas pruebas físicas cubren tracción continua, salida desde parado, picado sin creación de energía mecánica, salto anticipado, recuperación desde agua, recarga por picado y ausencia de parpadeo entre formas al agotarse el disco.
+
+Detalles y guía para continuar: [Vuelo y ajuste 2](FLIGHT_AND_TUNING.md).
+
+## Registro inicial
+
 Fecha local: 23 de septiembre de 2026. Rama de trabajo: `codex/webgpu-planet`. El código anterior se conserva en el historial Git, a partir de `ee323a1`.
 
 ## Comprobaciones ejecutadas

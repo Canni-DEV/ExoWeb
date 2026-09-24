@@ -48,7 +48,7 @@ Remove-Item Env:GPU_TESTS, Env:BENCHMARK_SECONDS
 
 Los ajustes permiten reasignar teclas y botones del mando, cambiar sensibilidad, invertir la cámara, seleccionar calidad y separar volúmenes. El modo de confort fija el FOV y desactiva motion blur y balanceo. F3 muestra el diagnóstico local.
 
-El disco consume energía; el suelo, el agua y las corrientes ascendentes la recuperan. La gravedad intensificada tiene prioridad sobre el planeo. Un impacto rasante sobre agua puede rebotar; si perdés velocidad, flotás y podés saltar de nuevo. Al perder foco o desconectar el mando, el juego se pausa.
+El disco tiene unos 20 segundos de energía en aire abierto. Un contacto con suelo o agua lo recarga; las corrientes, el rasante y un picado con gravedad también recuperan energía. La gravedad intensificada tiene prioridad sobre el planeo. Soltala y volvé a disco para convertir la caída en avance. Si perdés velocidad, usá las direcciones para rodar o acelerar flotando y saltá de nuevo. Al perder foco o desconectar el mando, el juego se pausa.
 
 El progreso se guarda en este navegador al alcanzar señales. Una partida nueva reemplaza ese progreso. Si el almacenamiento falla, se informa y la sesión continúa en memoria.
 
@@ -68,6 +68,7 @@ La configuración está incluida en el código; el despliegue remoto no se da po
 ## Documentación
 
 - [Arquitectura, contratos y parámetros](docs/ARCHITECTURE.md)
+- [Guía de vuelo, correcciones y ajustes](docs/FLIGHT_AND_TUNING.md)
 - [Registro de validación y criterios pendientes](docs/VALIDATION.md)
 - [Referencias visuales y técnicas](docs/REFERENCES.md)
 - [Avisos de dependencias](THIRD_PARTY_NOTICES.md)

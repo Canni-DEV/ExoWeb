@@ -1,6 +1,7 @@
 import { WORLD } from '../config';
 import { clamp, length } from '../simulation/math';
 import type { Action, Diagnostics, PlayerState, Settings } from '../types';
+import { flightGuide } from './flight-guide';
 
 export const element = <T extends HTMLElement = HTMLElement>(id: string) =>
   document.getElementById(id) as T;
@@ -259,6 +260,14 @@ export class UI {
     element('form-label').textContent = player.form === 'disc' ? 'DISCO' : 'ESFERA';
     element('energy-fill').style.width = `${player.energy}%`;
     element('energy-label').textContent = String(Math.round(player.energy));
+    const guide = flightGuide(player, this.settings);
+    element('energy-state').textContent = guide.state;
+    element('energy-fill').dataset.level = guide.low
+      ? 'low'
+      : guide.charging
+        ? 'charging'
+        : 'normal';
+    element('tutorial-text').textContent = guide.hint;
     element('destination-label').textContent = completed
       ? 'EXPLORACIÓN LIBRE'
       : next.name.toUpperCase();
@@ -271,11 +280,6 @@ export class UI {
     element('compass').style.opacity = completed ? '0' : '0.8';
     if (this.lastHint !== checkpoint) {
       this.lastHint = checkpoint;
-      const b = this.settings.bindings;
-      element('tutorial-text').textContent = WORLD.checkpoints[checkpoint].hint.replace(
-        'WASD',
-        [b.forward, b.left, b.backward, b.right].map(keyLabel).join(' / '),
-      );
       element('tutorial').hidden = completed;
     }
   }

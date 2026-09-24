@@ -14,6 +14,8 @@ export interface InputFrame {
   reset: boolean;
 }
 export type Contact = 'air' | 'ground' | 'water';
+export type EnergySource =
+  'ground' | 'water' | 'thermal' | 'skim' | 'dive' | 'glide' | 'empty' | 'idle';
 export interface PlayerState {
   position: Vec3;
   velocity: Vec3;
@@ -23,6 +25,11 @@ export interface PlayerState {
   morph: number;
   contact: Contact;
   time: number;
+  clearance: number;
+  energySource: EnergySource;
+  glideLocked: boolean;
+  jumpBuffer: number;
+  groundGrace: number;
 }
 export interface Checkpoint {
   id: number;

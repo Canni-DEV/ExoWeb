@@ -181,7 +181,7 @@ export class AtmospherePipeline {
       .mul(float(valid))
       .mul(reject)
       .mul(float(1).sub(motion.length().mul(40).saturate()))
-      .mul(0.72);
+      .mul(mix(0.3, 0.72, smoothstep(80, 1800, sceneDistance)));
     this.temporalMaterial.outputNode = vec4(mix(current.rgb, oldColor, temporalWeight), 1);
     this.temporalMRT = mrt({ output, meta: vec4(depth, 0, 0, 1) });
 
