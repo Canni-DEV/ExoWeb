@@ -24,11 +24,20 @@ test('settings are editable and persist even on an unsupported machine', async (
   await page.getByRole('button', { name: 'Ajustes', exact: true }).click();
   await page.getByRole('checkbox', { name: 'Modo de confort' }).check();
   await page.getByLabel('Calidad visual').selectOption('low');
+  await page.locator('#hud-mode').selectOption('full');
+  await page.getByText('Imagen y efectos', { exact: true }).click();
+  await page.getByLabel('Grano cinematográfico').press('Home');
+  for (let i = 0; i < 12; i++) await page.getByLabel('Grano cinematográfico').press('ArrowRight');
+  await page.getByLabel('Efectos de lente').press('Home');
   await page.reload();
   await page.getByRole('button', { name: 'Ver controles y ajustes' }).click();
   await page.getByRole('button', { name: 'Ajustes', exact: true }).click();
   await expect(page.getByRole('checkbox', { name: 'Modo de confort' })).toBeChecked();
   await expect(page.getByLabel('Calidad visual')).toHaveValue('low');
+  await expect(page.locator('#hud-mode')).toHaveValue('full');
+  await page.getByText('Imagen y efectos', { exact: true }).click();
+  await expect(page.getByLabel('Grano cinematográfico')).toHaveValue('0.6');
+  await expect(page.getByLabel('Efectos de lente')).toHaveValue('0');
 });
 test('keyboard remapping swaps collisions and updates the control instructions', async ({
   page,

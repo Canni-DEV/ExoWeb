@@ -1,25 +1,39 @@
 import {
   BufferAttribute,
   Mesh,
-  NodeMaterial,
+  MeshStandardNodeMaterial,
   PlaneGeometry,
-  Vector2,
+  Vector4,
   type Scene,
+  type Node,
 } from 'three/webgpu';
 import {
   attribute,
+  cameraViewMatrix,
+  modelWorldMatrix,
+  output,
+  sampler,
   Fn,
-  mix,
   positionLocal,
   positionPrevious,
   positionWorld,
-  smoothstep,
   uniform,
   vec3,
+  vec2,
   vec4,
 } from 'three/tsl';
 import { terrainHeight } from '../world/field';
-import { terrainColor, horizonDrop } from './shaders';
+import {
+  terrainSurface,
+  terrainWeights,
+  surfaceNormal,
+  cloudShadow,
+  aerial,
+  horizonDrop,
+  stitchHeight,
+} from './shaders';
+import type { MaterialLibrary } from './assets';
+import { MATERIAL_NAMES } from './assets';
 import { tileKey, TILE_SIZE } from '../world/tiles';
 import type { TerrainStream } from '../world/stream';
 import type { RenderUniforms } from './uniforms';
@@ -34,14 +48,15 @@ interface Patch {
 export class TerrainRenderer {
   private patches = new Map<string, Patch>();
   private center = '';
-  private nearMaterial: NodeMaterial;
-  private farMaterial: NodeMaterial;
+  private nearMaterial: MeshStandardNodeMaterial;
+  private farMaterial: MeshStandardNodeMaterial;
   private geometries = new Map<number, PlaneGeometry>();
   private nearPool: PlaneGeometry[] = [];
   constructor(
     private scene: Scene,
     private stream: TerrainStream,
     private u: RenderUniforms,
+    private library?: MaterialLibrary,
   ) {
     this.nearMaterial = this.material(true);
     this.farMaterial = this.material(false);
@@ -50,27 +65,102 @@ export class TerrainRenderer {
     };
   }
   private material(near: boolean) {
-    const m = new NodeMaterial();
+    const m = new MeshStandardNodeMaterial({ metalness: 0.04 });
     const global = positionWorld.add(this.u.origin);
     // positionWorld depends on positionNode: use an independent per-object offset.
-    const offset = uniform(new Vector2()).onObjectUpdate(
-      ({ object }) => new Vector2(object!.userData.worldX, object!.userData.worldZ),
-    );
+    const offset = modelWorldMatrix.mul(vec4(0, 0, 0, 1)).xz.add(this.u.origin.xz);
     const size = uniform(256).onObjectUpdate(({ object }) => object!.userData.patchSize as number);
     const coord = positionLocal.xz.add(offset);
-    const coarseStep = size.div(32);
-    const morph = smoothstep(size.mul(1.6), size.mul(3.2), coord.distance(this.u.eye.xz));
-    const sample = near ? coord : mix(coord, coord.div(coarseStep).floor().mul(coarseStep), morph);
-    const height = (near ? attribute('height', 'float') : terrainHeight(sample)).sub(
-      attribute('skirt', 'float').mul(size.div(16).max(4).min(500)),
+    // Keep vertices on their canonical coordinates: snapping XZ collapsed triangles at LOD rims.
+    const sample = coord;
+    const edges = uniform(new Vector4()).onObjectUpdate(
+      ({ object }) => object!.userData.edgeSpacing as Vector4,
     );
-    const visualHeight = near ? height : height.sub(horizonDrop(sample, this.u.eye.xz));
+    // Fine rim vertices interpolate the actual coarse edge; skirts alone exposed sawtooth walls.
+    const base = near
+      ? attribute('height', 'float')
+      : terrainHeight(sample).sub(horizonDrop(sample, this.u.eye.xz));
+    const visualHeight = stitchHeight(
+      sample,
+      positionLocal.xz,
+      size,
+      edges,
+      this.u.eye.xz,
+      base,
+      size.div(near ? 256 : 64),
+    ).sub(attribute('skirt', 'float').mul(4));
     const displaced = vec3(sample.x.sub(offset.x), visualHeight, sample.y.sub(offset.y));
     m.positionNode = Fn(() => {
       positionPrevious.assign(displaced);
       return displaced;
     })();
-    m.outputNode = vec4(terrainColor(global, this.u.eye, this.u.sun, this.u.storm, this.u.ship), 1);
+    const epsilon = global.distance(this.u.eye).mul(0.004).clamp(4, 120);
+    const normalCoord = global.xz;
+    const smoothNormal = vec3(
+      terrainHeight(normalCoord.sub(vec2(epsilon, 0))).sub(
+        terrainHeight(normalCoord.add(vec2(epsilon, 0))),
+      ),
+      epsilon.mul(2),
+      terrainHeight(normalCoord.sub(vec2(0, epsilon))).sub(
+        terrainHeight(normalCoord.add(vec2(0, epsilon))),
+      ),
+    ).normalize();
+    const n = smoothNormal;
+    const weights = terrainWeights(global, n);
+    const coords = global.mul(0.15);
+    const blend = n.abs().pow(5);
+    const sum = blend.x.add(blend.y).add(blend.z);
+    const samples = MATERIAL_NAMES.map((name) => {
+      const map = this.library?.maps[name];
+      return map
+        ? [map.sample(coords.yz), map.sample(coords.xz), map.sample(coords.xy)]
+        : [vec4(0.5, 0.5, 0.5, 0.6), vec4(0.5, 0.5, 0.5, 0.6), vec4(0.5, 0.5, 0.5, 0.6)];
+    });
+    const packed = samples.map((s) =>
+      s[0].mul(blend.x).add(s[1].mul(blend.y)).add(s[2].mul(blend.z)).div(sum),
+    );
+    const surface = terrainSurface(
+      global,
+      n,
+      packed[0],
+      packed[1],
+      packed[2],
+      packed[3],
+      this.u.storm,
+    );
+    const mixed = [0, 1, 2].map((axis) =>
+      samples[0][axis]
+        .mul(weights.x)
+        .add(samples[1][axis].mul(weights.y))
+        .add(samples[2][axis].mul(weights.z))
+        .add(samples[3][axis].mul(weights.w)),
+    );
+    const normal = surfaceNormal(n, mixed[0], mixed[1], mixed[2]);
+    m.normalNode = normal.transformDirection(cameraViewMatrix);
+    m.colorNode = surface.rgb;
+    m.roughnessNode = surface.a;
+    const occlusion = packed[0].b
+      .mul(weights.x)
+      .add(packed[1].b.mul(weights.y))
+      .add(packed[2].b.mul(weights.z))
+      .add(weights.w)
+      .mul(0.12)
+      .add(0.88);
+    m.aoNode = occlusion;
+    const shadow = cloudShadow(
+      global,
+      this.u.sun,
+      this.u.time,
+      this.u.storm,
+      this.u.cloudNoise,
+      sampler(this.u.cloudNoise),
+    );
+    // Three r186 calls this with the shadow node; published types incorrectly declare no args.
+    m.receivedShadowNode = Fn(([received]: [Node<'vec4'>]) =>
+      received.mul(shadow),
+    ) as unknown as () => Node;
+    m.outputNode = vec4(aerial(output.rgb, global, this.u.eye, this.u.sun, this.u.storm), 1);
+    m.castShadowPositionNode = displaced;
     return m;
   }
   update(x: number, z: number) {
@@ -86,6 +176,7 @@ export class TerrainRenderer {
         Math.max(Math.abs(x - (px + size / 2)) - size / 2, 0),
         Math.max(Math.abs(z - (pz + size / 2)) - size / 2, 0),
       );
+      if (distance > 120000) return;
       if (size > 256 && distance < size * 1.8) {
         const h = size / 2;
         for (let iz = 0; iz < 2; iz++)
@@ -99,7 +190,9 @@ export class TerrainRenderer {
         this.stream.ready(px, pz);
       wanted.set(`${px},${pz},${size},${near}`, { x: px, z: pz, size, near });
     };
-    visit(-32768, -32768, 65536);
+    // Match the ocean's horizon. Stopping land at the playable boundary exposed
+    // water above positive terrain heights and produced a sheet of distant foam.
+    visit(-262144, -262144, 524288);
     for (const [key, p] of this.patches)
       if (!wanted.has(key)) {
         this.scene.remove(p.mesh);
@@ -139,12 +232,34 @@ export class TerrainRenderer {
         }
         const mesh = new Mesh(geometry, p.near ? this.nearMaterial : this.farMaterial);
         mesh.frustumCulled = false;
+        mesh.castShadow = p.size <= 1024;
+        mesh.receiveShadow = true;
         mesh.userData.worldX = p.x;
         mesh.userData.worldZ = p.z;
         mesh.userData.patchSize = p.size;
+        mesh.userData.edgeSpacing = new Vector4();
         this.scene.add(mesh);
         this.patches.set(key, { ...p, mesh });
       }
+    const all = [...this.patches.values()];
+    for (const p of all) {
+      const own = p.size / (p.near ? 256 : 64),
+        epsilon = 0.01;
+      const points = [
+        [p.x + p.size / 2, p.z - epsilon],
+        [p.x + p.size / 2, p.z + p.size + epsilon],
+        [p.x - epsilon, p.z + p.size / 2],
+        [p.x + p.size + epsilon, p.z + p.size / 2],
+      ];
+      const steps = points.map(([px, pz]) => {
+        const neighbor = all.find(
+          (q) => px >= q.x && px < q.x + q.size && pz >= q.z && pz < q.z + q.size,
+        );
+        const spacing = neighbor ? neighbor.size / (neighbor.near ? 256 : 64) : own;
+        return spacing > own ? spacing : 0;
+      });
+      (p.mesh.userData.edgeSpacing as Vector4).set(steps[0], steps[1], steps[2], steps[3]);
+    }
     this.rebase();
   }
   private addSkirts(geometry: PlaneGeometry, size: number) {

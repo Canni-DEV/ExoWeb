@@ -1,4 +1,4 @@
-import { Mesh, NodeMaterial, PlaneGeometry, type Scene } from 'three/webgpu';
+import { Mesh, NodeMaterial, PlaneGeometry, type Scene, type Node } from 'three/webgpu';
 import {
   Fn,
   modelWorldMatrix,
@@ -7,15 +7,53 @@ import {
   positionWorld,
   vec3,
   vec4,
+  sampler,
+  cameraProjectionMatrix,
+  cameraViewMatrix,
 } from 'three/tsl';
-import { terrainHeight, waterHeight } from '../world/field';
+import { terrainHeight, waterHeight, waterNormal } from '../world/field';
 import { waterColor, horizonDrop } from './shaders';
 import type { RenderUniforms } from './uniforms';
+import { shader } from './native';
+import type TextureNode from 'three/src/nodes/accessors/TextureNode.js';
+
+const waterScreen = shader<'vec3'>(
+  `fn exoWaterScreen(base:vec3f,p:vec3f,eye:vec3f,origin:vec3f,t:f32,ground:f32,quality:i32,vp:mat4x4f,ip:mat4x4f,col:texture_2d<f32>,dep:texture_depth_2d,sm:sampler)->vec3f {
+ let n=exoWaterNormal(p.xz,t,0.0);let clip=vp*vec4f(p-origin,1.0);let uv=clip.xy/clip.w*vec2f(.5,-.5)+.5;
+ let view=normalize(eye-p);let fresnel=.025+.975*pow(1.0-max(0.0,dot(n,view)),5.0);
+ let refractedUV=clamp(uv+n.xz*.004,vec2f(.001),vec2f(.999));
+ let backgroundDepth=textureLoad(dep,vec2i(refractedUV*vec2f(textureDimensions(dep))),0);
+ let safe=select(0.0,1.0,backgroundDepth>clip.z/clip.w);
+ let refraction=textureSampleLevel(col,sm,refractedUV,0.0).rgb*vec3f(.42,.76,.68);
+ var result=mix(base,refraction,exp(-max(0.0,exoWater(p.xz,t)-ground)*.085)*(1.0-fresnel)*.45*safe);
+ if(quality<2){return result;}
+ let direction=reflect(-view,n);var lastDelta=-1000.0;
+ for(var i=0;i<28;i++){
+  let f=(f32(i)+1.0)/28.0;let distance=2.0+f*f*1300.0;
+  let ray=vp*vec4f(p+direction*distance+n*.6-origin,1.0);
+  if(ray.w<=0.0){break;}
+  let coord=ray.xy/ray.w*vec2f(.5,-.5)+.5;
+  if(any(coord<vec2f(.002))||any(coord>vec2f(.998))){break;}
+  let depth=textureLoad(dep,vec2i(coord*vec2f(textureDimensions(dep))),0);
+  let sampleView=ip*vec4f(coord*vec2f(2.0,-2.0)+vec2f(-1.0,1.0),depth,1.0);
+  let delta=ray.w+sampleView.z/sampleView.w;
+  if(depth<.999999 && delta>=0.0 && delta<max(4.0,distance*.08) && lastDelta<0.0){
+   let border=min(min(coord.x,coord.y),min(1.0-coord.x,1.0-coord.y));
+   let confidence=smoothstep(0.0,.08,border)*(1.0-f*.5);
+   result=mix(result,textureSampleLevel(col,sm,coord,0.0).rgb,fresnel*confidence);break;
+  }
+  lastDelta=delta;
+ }
+ return result;
+}`,
+  [waterNormal, waterHeight],
+);
 export class OceanRenderer {
   private patches = new Map<string, { mesh: Mesh; x: number; z: number }>();
   private geometry = new Map<number, PlaneGeometry>();
   private material = new NodeMaterial();
   private center = '';
+  private color: Node<'vec3'>;
   constructor(
     private scene: Scene,
     private u: RenderUniforms,
@@ -29,11 +67,48 @@ export class OceanRenderer {
       positionLocal.z,
     );
     this.material.positionNode = Fn(() => {
-      positionPrevious.assign(displaced);
+      positionPrevious.assign(
+        vec3(
+          positionLocal.x,
+          waterHeight(coord, u.previousTime).sub(horizonDrop(coord, u.eye.xz)),
+          positionLocal.z,
+        ),
+      );
       return displaced;
     })();
+    this.color = waterColor(
+      global,
+      u.eye,
+      u.sun,
+      u.storm,
+      terrainHeight(global.xz),
+      u.ship,
+      u.shipVelocity,
+      u.contact,
+      u.time,
+      u.cloudNoise,
+      sampler(u.cloudNoise),
+    );
+    this.material.outputNode = vec4(this.color, 1);
+  }
+  bindScene(color: TextureNode<'vec4'>, depth: TextureNode<'vec4'>) {
+    const u = this.u,
+      p = positionWorld.add(u.origin);
     this.material.outputNode = vec4(
-      waterColor(global, u.eye, u.sun, u.storm, terrainHeight(global.xz), u.ship, u.time),
+      waterScreen(
+        this.color,
+        p,
+        u.eye,
+        u.origin,
+        u.time,
+        terrainHeight(p.xz),
+        u.quality,
+        cameraProjectionMatrix.mul(cameraViewMatrix),
+        u.inverseProjection,
+        color,
+        depth,
+        sampler(color),
+      ),
       1,
     );
   }
@@ -74,6 +149,7 @@ export class OceanRenderer {
         }
         const mesh = new Mesh(geometry, this.material);
         mesh.frustumCulled = false;
+        mesh.layers.set(1);
         this.scene.add(mesh);
         this.patches.set(key, { mesh, x: p.x, z: p.z });
       }

@@ -8,12 +8,16 @@ import { Input } from './platform/input';
 import { Soundscape } from './platform/audio';
 import { element, UI } from './platform/ui';
 import type { PlayerState, Vec3 } from './types';
+import type { Quality } from './types';
+import { VisualEvents } from './simulation/visual-events';
 
 const store = new SaveStore(),
   ui = new UI(store.data.settings),
   input = new Input(element<HTMLCanvasElement>('app'), store.data.settings),
   audio = new Soundscape(),
   clock = new FixedClock();
+const visualEvents = new VisualEvents();
+let inspectionFrozen = false;
 let engine: Engine | null = null,
   player: PlayerState = createPlayer({ x: 0, y: 200, z: 0 }),
   previous = clonePlayer(player);
@@ -33,10 +37,14 @@ const presets: Record<string, Vec3> = {
   nube: { x: -3800, y: 2700, z: -9800 },
   cielo: { x: -5900, y: 5800, z: -14600 },
   oceano: { x: 10000, y: 80, z: -22600 },
+  rasante: { x: 100, y: 0, z: -500 },
+  monolito: { x: 140, y: 300, z: 160 },
+  tormenta: { x: 15000, y: 35, z: -24000 },
 };
 let firstFrame = false,
   benchmarkFrames: number[] | null = null;
 interface TestAPI {
+  play: () => void;
   snapshot: () => {
     player: PlayerState;
     playing: boolean;
@@ -48,11 +56,24 @@ interface TestAPI {
     memoryMiB: number;
     origin: Vec3;
     frames: number[];
+    visual: Engine['visualStats'];
   };
   visit: (scene: string) => Promise<void>;
   sample: (x: number, z: number) => number;
   seamError: () => number;
   beginBenchmark: () => void;
+  configure: (options: {
+    time?: number;
+    frozen?: boolean;
+    yaw?: number;
+    pitch?: number;
+    quality?: Quality;
+    scale?: number | null;
+    form?: 'sphere' | 'disc';
+    velocity?: Vec3;
+    position?: Vec3;
+    hud?: 'contextual' | 'full' | 'hidden';
+  }) => Promise<void>;
 }
 declare global {
   interface Window {
@@ -101,6 +122,7 @@ function resume() {
   started = true;
   input.active = true;
   clock.reset();
+  visualEvents.clear();
   last = performance.now();
   engine?.invalidate();
   void audio
@@ -115,6 +137,7 @@ async function spawn(position?: Vec3) {
   input.clear();
   clock.reset();
   element('streaming').hidden = false;
+  visualEvents.clear();
   const cp = WORLD.checkpoints[checkpoint],
     p = position ?? { x: cp.x, y: 0, z: cp.z };
   await engine.stream.warm(p);
@@ -223,6 +246,7 @@ function tick(now: number) {
         element('streaming').hidden = true;
         previous = clonePlayer(player);
         const events = simulate(player, controls, engine!.stream, step);
+        if (!events.invalid) visualEvents.push(events, player);
         input.consumeJump();
         controls.jump = false;
         audio.events(events);
@@ -254,7 +278,7 @@ function tick(now: number) {
         }
       });
       audio.update(player, store.data.settings, checkpoint);
-    } else if (!started) {
+    } else if (!started && !inspectionFrozen) {
       player.time += dt;
       previous = clonePlayer(player);
     }
@@ -271,6 +295,8 @@ function tick(now: number) {
         checkpoint,
         completed,
         dt: rawDt,
+        events: visualEvents.drain(),
+        gravity: controls.gravity,
       },
       store.data.settings,
       playing || Boolean(benchmarkFrames),
@@ -299,6 +325,7 @@ async function boot() {
   const params = new URLSearchParams(location.search),
     preset = presets[params.get('scene') ?? ''];
   await spawn(preset ?? { x: 0, y: 275, z: 0 });
+  if (failed) return;
   ui.ready(checkpoint > 0);
   last = performance.now();
   frame = requestAnimationFrame(tick);
@@ -309,6 +336,7 @@ async function boot() {
   }
   if (params.has('test'))
     window.__EXOWEB_TEST__ = {
+      play: () => resume(),
       snapshot: () => ({
         player: clonePlayer(player),
         playing,
@@ -324,6 +352,7 @@ async function boot() {
           z: engine!.uniforms.origin.value.z,
         },
         frames: benchmarkFrames ?? [],
+        visual: engine!.visualStats,
       }),
       visit: async (name) => {
         if (!presets[name]) throw new Error('Escena desconocida');
@@ -337,6 +366,27 @@ async function boot() {
       seamError: () => engine!.stream.seamError,
       beginBenchmark: () => {
         benchmarkFrames = [];
+      },
+      configure: async (options) => {
+        if (options.position) await spawn(options.position);
+        if (options.time !== undefined) {
+          player.time = options.time;
+          previous = clonePlayer(player);
+          engine!.resetCamera(player.position, input.yaw);
+        }
+        if (options.frozen !== undefined) inspectionFrozen = options.frozen;
+        if (options.yaw !== undefined) input.yaw = options.yaw;
+        if (options.pitch !== undefined) input.pitch = options.pitch;
+        if (options.quality) store.data.settings.quality = options.quality;
+        if (options.hud) store.data.settings.hud = options.hud;
+        if (options.scale !== undefined) engine!.setResolutionScale(options.scale);
+        if (options.form) {
+          player.form = options.form;
+          player.morph = options.form === 'disc' ? 1 : 0;
+        }
+        if (options.velocity) player.velocity = { ...options.velocity };
+        previous = clonePlayer(player);
+        engine!.invalidate();
       },
     };
 }

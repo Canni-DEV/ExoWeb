@@ -1,14 +1,7 @@
 import {
   ACESFilmicToneMapping,
-  AdditiveBlending,
   BackSide,
-  Color,
-  CylinderGeometry,
-  DirectionalLight,
   Group,
-  HemisphereLight,
-  InstancedMesh,
-  Matrix4,
   Mesh,
   MeshBasicNodeMaterial,
   MeshStandardNodeMaterial,
@@ -20,25 +13,24 @@ import {
   Vector3,
   WebGPURenderer,
 } from 'three/webgpu';
-import {
-  float,
-  Fn,
-  instanceIndex,
-  positionLocal,
-  positionPrevious,
-  positionWorld,
-  vec4,
-} from 'three/tsl';
-import { shader } from './native';
-import { PHYSICS, WORLD } from '../config';
+import { mix, output, positionLocal, positionWorld, vec4, vec3 } from 'three/tsl';
+import { PHYSICS } from '../config';
 import { damp, length, smooth } from '../simulation/math';
 import type { Diagnostics, Quality, RenderSnapshot, Settings, Vec3 } from '../types';
 import { TerrainStream } from '../world/stream';
 import { createUniforms } from './uniforms';
-import { skyColor } from './shaders';
+import { skyColor, aerial } from './shaders';
 import { AtmospherePipeline } from './pipeline';
 import { TerrainRenderer } from './terrain';
 import { OceanRenderer } from './ocean';
+import { MaterialLibrary } from './assets';
+import { WorldLighting } from './lighting';
+import { LandmarkRenderer } from './landmarks';
+import { environmentAt } from '../world/environment';
+import { sweepLandmarks } from '../world/landmarks';
+import { EffectsRenderer } from './effects';
+import { noise2 } from '../world/field';
+import { GroundDetail } from './ground-detail';
 
 export class Engine {
   adapterDescription = '';
@@ -54,8 +46,13 @@ export class Engine {
   private halo: Mesh;
   private ocean: OceanRenderer;
   private sky: Mesh;
-  private dust: InstancedMesh;
-  private beacons: { group: Group; global: Vector3; beam: Mesh }[] = [];
+  private assets: MaterialLibrary;
+  private lighting: WorldLighting;
+  private landmarks: LandmarkRenderer;
+  private effects: EffectsRenderer;
+  private groundDetail: GroundDetail;
+  private frozenScale: number | null = null;
+  private lastTime = 0;
   private cameraPosition = new Vector3();
   private previousYaw = 0;
   private previousPitch = 0;
@@ -88,8 +85,13 @@ export class Engine {
         `La GPU dejó de responder (${info.reason}). Recargá para continuar desde el checkpoint.`,
       );
     this.stream = new TerrainStream(this.renderer);
-    this.terrain = new TerrainRenderer(this.scene, this.stream, this.uniforms);
+    this.assets = new MaterialLibrary(this.renderer);
+    this.terrain = new TerrainRenderer(this.scene, this.stream, this.uniforms, this.assets);
     this.pipeline = new AtmospherePipeline(this.renderer, this.uniforms);
+    this.lighting = new WorldLighting(this.renderer, this.scene, this.uniforms);
+    this.landmarks = new LandmarkRenderer(this.scene, this.stream, this.uniforms, this.assets);
+    this.effects = new EffectsRenderer(this.scene, this.uniforms);
+    this.groundDetail = new GroundDetail(this.scene, this.stream, this.uniforms);
     const u = this.uniforms;
     const skyMaterial = new NodeMaterial();
     skyMaterial.side = BackSide;
@@ -102,43 +104,41 @@ export class Engine {
     this.sky.frustumCulled = false;
     this.scene.add(this.sky);
     this.ocean = new OceanRenderer(this.scene, u);
-    this.orb = new Mesh(
-      new SphereGeometry(PHYSICS.radius, 48, 32),
-      new MeshStandardNodeMaterial({ color: 0x818c8e, metalness: 0.88, roughness: 0.23 }),
+    this.ocean.bindScene(this.pipeline.opaqueColor, this.pipeline.opaqueDepth);
+    const shipMaterial = new MeshStandardNodeMaterial({
+      color: 0x59505a,
+      metalness: 0.94,
+      roughness: 0.2,
+    });
+    const mottling = noise2(positionLocal.xz.mul(4.5));
+    shipMaterial.colorNode = mix(
+      vec3(0.015, 0.012, 0.017),
+      vec3(0.085, 0.065, 0.055),
+      mottling.smoothstep(0.25, 0.8),
     );
+    shipMaterial.roughnessNode = mottling.mul(0.2).add(0.12);
+    const glow = positionLocal.y
+      .negate()
+      .add(0.8)
+      .smoothstep(0, 2)
+      .mul(mottling.mul(0.25).add(0.75));
+    shipMaterial.emissiveNode = vec3(2.8, 0.45, 0.065)
+      .mul(glow)
+      .mul(u.energy.mul(0.65).add(u.gravity.mul(0.8)).add(0.18));
+    shipMaterial.outputNode = vec4(
+      aerial(output.rgb, positionWorld.add(u.origin), u.eye, u.sun, u.storm),
+      1,
+    );
+    this.orb = new Mesh(new SphereGeometry(PHYSICS.radius, 48, 32), shipMaterial);
     this.halo = new Mesh(
       new TorusGeometry(2.47, 0.018, 6, 96),
       new MeshBasicNodeMaterial({ color: 0x9cebea }),
     );
     this.halo.rotation.x = Math.PI / 2;
     this.ship.add(this.orb, this.halo);
+    this.orb.castShadow = true;
+    this.orb.receiveShadow = true;
     this.scene.add(this.ship);
-    const sun = new DirectionalLight(0xffdfb2, 4);
-    sun.position.copy(u.sun.value).multiplyScalar(100);
-    this.scene.add(sun, new HemisphereLight(0xb0d6ef, 0x29211c, 2));
-
-    const particles = new NodeMaterial();
-    particles.transparent = true;
-    particles.depthWrite = false;
-    particles.blending = AdditiveBlending;
-    const particlePosition =
-      shader<'vec3'>(`fn exoParticle(i:f32,t:f32,ship:vec3f,origin:vec3f)->vec3f{
-      let seed=fract(sin(i*127.1+311.7)*43758.5453);
-      let a=i*2.39996;let radius=20.0+seed*160.0;
-      return ship-origin+vec3f(cos(a)*radius,fract(seed+t*0.015)*100.0-50.0,sin(a)*radius);
-    }`);
-    const dustPosition = positionLocal.add(
-      particlePosition(float(instanceIndex), u.time, u.ship, u.origin),
-    );
-    particles.positionNode = Fn(() => {
-      positionPrevious.assign(dustPosition);
-      return dustPosition;
-    })();
-    particles.outputNode = vec4(0.21, 0.35, 0.39, 0.22);
-    this.dust = new InstancedMesh(new SphereGeometry(0.15, 3, 2), particles, 512);
-    for (let i = 0; i < 512; i++) this.dust.setMatrixAt(i, new Matrix4());
-    this.dust.frustumCulled = false;
-    this.scene.add(this.dust);
   }
   static async create(canvas: HTMLCanvasElement) {
     if (!navigator.gpu)
@@ -151,7 +151,14 @@ export class Engine {
         'No se encontró una GPU compatible con WebGPU. Revisá la aceleración gráfica y el controlador.',
       );
     const device = await adapter.requestDevice({
-      requiredFeatures: adapter.features.has('timestamp-query') ? ['timestamp-query'] : [],
+      requiredFeatures: (
+        [
+          'timestamp-query',
+          'texture-compression-bc',
+          'texture-compression-etc2',
+          'texture-compression-astc',
+        ] as GPUFeatureName[]
+      ).filter((f) => adapter.features.has(f)),
     });
     const engine = new Engine(canvas, device);
     engine.adapterDescription = [
@@ -168,35 +175,16 @@ export class Engine {
     return engine;
   }
   async initialize() {
-    for (const cp of WORLD.checkpoints) {
-      const height = await this.stream.loadPoint(cp.x + 100, cp.z + 100);
-      const group = new Group();
-      const pillar = new Mesh(
-        new CylinderGeometry(9, 16, 200, 5),
-        new MeshStandardNodeMaterial({ color: 0x19262b, metalness: 0.6, roughness: 0.5 }),
-      );
-      pillar.position.y = 100;
-      const beam = new Mesh(
-        new CylinderGeometry(4, 9, 6500, 8, 1, true),
-        new MeshBasicNodeMaterial({
-          color: new Color(0.23, 1.1, 1.45),
-          transparent: true,
-          opacity: 0.2,
-          depthWrite: false,
-          blending: AdditiveBlending,
-        }),
-      );
-      beam.position.y = 3300;
-      group.add(pillar, beam);
-      this.scene.add(group);
-      this.beacons.push({
-        group,
-        global: new Vector3(cp.x + 100, Math.max(0, height), cp.z + 100),
-        beam,
-      });
-    }
+    await this.assets.load('medium');
+    await this.landmarks.initialize();
+    this.lighting.quality('medium');
+    this.lighting.update(true);
   }
   resetCamera(position: Vec3, yaw: number) {
+    this.effects.clear();
+    this.orb.rotation.x = 0;
+    this.lighting.invalidate();
+    this.lastTime = 0;
     this.cameraPosition.set(
       position.x + Math.sin(yaw) * 40,
       position.y + 12,
@@ -204,7 +192,7 @@ export class Engine {
     );
     this.pipeline.invalidate();
     this.uniforms.historyValid.value = 0;
-    this.uniforms.storm.value = smooth(1000, 14000, position.x) * smooth(10000, 19000, -position.z);
+    this.uniforms.storm.value = environmentAt(position).storm;
   }
   invalidate() {
     this.pipeline.invalidate();
@@ -216,17 +204,21 @@ export class Engine {
     this.invalidate();
   }
   private resize(quality: Quality) {
-    const width = Math.max(2, Math.floor(window.innerWidth * this.scale)),
-      height = Math.max(2, Math.floor(window.innerHeight * this.scale));
+    const pixelRatio = window.devicePixelRatio || 1;
+    const width = Math.max(2, Math.floor(window.innerWidth * pixelRatio * this.scale)),
+      height = Math.max(2, Math.floor(window.innerHeight * pixelRatio * this.scale));
     if (width === this.width && height === this.height && quality === this.quality) return;
     this.width = width;
     this.height = height;
     this.quality = quality;
-    this.renderer.setSize(width, height, false);
+    this.renderer.setPixelRatio(pixelRatio);
+    this.renderer.setSize(window.innerWidth, window.innerHeight, false);
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.pipeline.resize(width, height, quality);
-    this.dust.count = quality === 'low' ? 128 : quality === 'high' ? 512 : 256;
+    this.lighting.quality(quality);
+    if (!this.assets.loading && this.assets.quality !== quality)
+      void this.assets.load(quality).catch((e) => this.onLost(String(e)));
   }
   render(snapshot: RenderSnapshot, settings: Settings, measure = true) {
     if (!this.alive) return;
@@ -245,19 +237,33 @@ export class Engine {
       this.ocean.rebase();
       this.pipeline.invalidate();
     }
-    const storm = smooth(1000, 14000, p.position.x) * smooth(10000, 19000, -p.position.z);
+    const environment = environmentAt(p.position),
+      storm = environment.storm;
     u.storm.value = damp(u.storm.value, storm, 0.15, dt);
+    u.previousTime.value = this.lastTime || p.time;
+    u.delta.value = Math.max(0, p.time - u.previousTime.value);
     u.time.value = p.time;
+    this.lastTime = p.time;
+    u.alpine.value = environment.alpine;
+    u.wetness.value = environment.wetness;
     u.ship.value.set(p.position.x, p.position.y, p.position.z);
-    u.exposure.value = damp(u.exposure.value, 1.08 + storm * 0.25, 0.5, dt);
-    u.blur.value = settings.comfort ? 0 : 0.18 * smooth(60, 280, speed);
+    u.shipVelocity.value.set(p.velocity.x, p.velocity.y, p.velocity.z);
+    u.contact.value = p.contact === 'water' ? 1 : p.clearance < 8 && p.position.y < 12 ? 0.4 : 0;
+    u.energy.value = p.energy / 100;
+    u.gravity.value = snapshot.gravity ? 1 : 0;
+    u.exposure.value = damp(u.exposure.value, environment.exposure, 0.5, dt);
+    u.blur.value = settings.comfort ? 0 : settings.motionBlur * 0.4 * smooth(60, 280, speed);
+    u.bloom.value = settings.bloom;
+    u.grain.value = settings.grain;
+    u.lens.value = settings.comfort ? 0 : settings.lens;
+    u.quality.value = settings.quality === 'low' ? 0 : settings.quality === 'high' ? 2 : 1;
     const yaw = snapshot.cameraYaw,
       pitch = snapshot.cameraPitch;
     if (Math.abs(yaw - this.previousYaw) > 0.3 || Math.abs(pitch - this.previousPitch) > 0.2)
       this.pipeline.invalidate();
     this.previousYaw = yaw;
     this.previousPitch = pitch;
-    const distance = 40 + Math.min(35, speed * 0.09),
+    const distance = 65 + Math.min(45, speed * 0.1),
       vertical = 7 + Math.sin(pitch) * distance;
     const target = new Vector3(
       p.position.x + Math.sin(yaw) * distance * Math.cos(pitch),
@@ -280,6 +286,18 @@ export class Engine {
       }
     }
     this.cameraPosition.lerp(target, 1 - Math.exp(-8 * dt));
+    const obstacle = sweepLandmarks(
+      p.position,
+      { x: this.cameraPosition.x, y: this.cameraPosition.y, z: this.cameraPosition.z },
+      2,
+      this.stream.obstacles,
+    );
+    if (obstacle)
+      this.cameraPosition.lerpVectors(
+        new Vector3(p.position.x, p.position.y, p.position.z),
+        this.cameraPosition,
+        Math.max(0.005, obstacle.fraction - 0.02),
+      );
     if (this.stream.ready(this.cameraPosition.x, this.cameraPosition.z))
       this.cameraPosition.y = Math.max(
         this.cameraPosition.y,
@@ -291,8 +309,6 @@ export class Engine {
       .addScaledVector(new Vector3(p.velocity.x, 0, p.velocity.z), 0.035)
       .sub(u.origin.value);
     this.camera.lookAt(focus);
-    if (!settings.comfort)
-      this.camera.rotateZ(Math.sin(p.time * 0.5) * Math.min(0.012, speed * 0.00004));
     this.camera.fov = damp(
       this.camera.fov,
       settings.comfort ? 65 : 65 + 25 * smooth(20, 300, speed),
@@ -303,18 +319,25 @@ export class Engine {
     this.camera.updateMatrixWorld();
     this.ship.position.copy(u.ship.value).sub(u.origin.value);
     this.orb.scale.set(1 + p.morph * 0.4, 1 - p.morph * 0.83, 1 + p.morph * 0.4);
-    this.orb.rotation.x += ((speed * dt) / PHYSICS.radius) * (1 - p.morph);
+    const visualDt = Math.min(0.05, u.delta.value);
+    if (p.form === 'disc') this.orb.rotation.x *= Math.exp(-12 * visualDt);
+    else {
+      const roll = this.orb.rotation.x + ((speed * visualDt) / PHYSICS.radius) * (1 - p.morph) ** 2;
+      this.orb.rotation.x = Math.atan2(Math.sin(roll), Math.cos(roll));
+    }
     this.ship.rotation.y = p.yaw;
     this.halo.scale.setScalar(1 + p.morph * 0.4);
     this.halo.visible = p.form === 'disc';
     this.sky.position.copy(this.camera.position);
-    for (const [i, b] of this.beacons.entries()) {
-      b.group.position.copy(b.global).sub(u.origin.value);
-      b.beam.visible = snapshot.completed || i === Math.min(4, snapshot.checkpoint + 1);
-    }
+    this.landmarks.update(snapshot.checkpoint, snapshot.completed);
+    this.effects.update(snapshot, this.camera, settings.quality);
     this.terrain.update(p.position.x, p.position.z);
     this.ocean.update(p.position.x, p.position.z);
+    this.groundDetail.update(p.position.x, p.position.z, settings.quality);
     this.resize(settings.quality);
+    if (!this.assets.loading && this.assets.quality !== settings.quality)
+      void this.assets.load(settings.quality).catch((e) => this.onLost(String(e)));
+    this.lighting.update();
     this.pipeline.render(this.scene, this.camera);
     const cpuMs = performance.now() - started;
     if (measure && snapshot.dt > 0 && snapshot.dt < 0.2) {
@@ -327,8 +350,9 @@ export class Engine {
         p95 = sorted[Math.floor(sorted.length * 0.95)],
         avg = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
       const old = this.scale;
-      if (avg > 17.3) this.scale = Math.max(0.67, this.scale - 0.05);
+      if (avg > 17.3) this.scale = Math.max(0.75, this.scale - 0.05);
       else if (avg < 16.1) this.scale = Math.min(1, this.scale + 0.025);
+      if (this.frozenScale !== null) this.scale = this.frozenScale;
       if (old !== this.scale) {
         this.resize(settings.quality);
         this.frameTimes = [];
@@ -365,6 +389,8 @@ export class Engine {
       this.pipeline.memoryBytes +
       (this.terrain.vertices + this.ocean.vertices) * 40 +
       this.stream.tiles.size * 257 * 257 * 4 +
+      this.assets.memoryBytes +
+      this.lighting.memoryBytes +
       8 * 1024 * 1024
     );
   }
@@ -374,6 +400,12 @@ export class Engine {
     this.terrain.dispose();
     this.ocean.dispose();
     this.pipeline.dispose();
+    this.landmarks.dispose();
+    this.effects.dispose();
+    this.groundDetail.dispose();
+    this.lighting.dispose();
+    this.assets.dispose();
+    this.uniforms.cloudNoise.value.dispose();
     this.scene.traverse((object) => {
       if (object instanceof Mesh) {
         object.geometry.dispose();
@@ -382,5 +414,32 @@ export class Engine {
       }
     });
     this.renderer.dispose();
+  }
+  setResolutionScale(scale: number | null) {
+    this.frozenScale = scale;
+    this.scale = scale ?? 1;
+    this.resize(this.quality);
+    this.invalidate();
+  }
+  get visualStats() {
+    return {
+      scale: this.scale,
+      quality: this.quality,
+      assetsLoading: this.assets.loading,
+      historyValid: this.uniforms.historyValid.value,
+      effects: this.effects.count,
+      shipRoll: this.orb.rotation.x,
+      invalidations: this.pipeline.invalidations,
+      camera: {
+        x: this.cameraPosition.x,
+        y: this.cameraPosition.y,
+        z: this.cameraPosition.z,
+        fov: this.camera.fov,
+      },
+      internal: { width: this.width, height: this.height },
+      output: { width: this.renderer.domElement.width, height: this.renderer.domElement.height },
+      sectors: this.stream.tiles.size,
+      pendingSectors: this.stream.pending.size,
+    };
   }
 }

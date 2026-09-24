@@ -724,3 +724,41 @@ noscript {
     transition: none !important;
   }
 }
+
+/* Contextual instruments leave the landscape and its signal in charge of navigation. */
+#hud[data-mode='contextual'] .telemetry,
+#hud[data-mode='contextual'] .stage,
+#hud[data-mode='contextual'] .destination,
+#hud[data-mode='contextual'] .wordmark,
+#hud[data-mode='contextual'] #reticle {
+  visibility: hidden;
+}
+#hud[data-mode='contextual'][data-energy='idle'] .energy {
+  opacity: 0;
+}
+.energy {
+  transition: opacity 0.8s;
+}
+#hud[data-mode='contextual'] #compass {
+  font-size: 12px;
+  opacity: 0.4;
+}
+#hud[data-mode='hidden'] .hud-bottom,
+#hud[data-mode='hidden'] .destination,
+#hud[data-mode='hidden'] .wordmark,
+#hud[data-mode='hidden'] #compass,
+#hud[data-mode='hidden'] #reticle,
+#hud[data-mode='hidden'] #tutorial {
+  visibility: hidden;
+}
+#hud[data-mode='contextual'] #tutorial {
+  background: #1b14214d;
+  border: 0;
+  backdrop-filter: blur(6px);
+}
+.settings-panel details {
+  margin: 16px 0;
+}
+.settings-panel details label {
+  margin-top: 16px;
+}
