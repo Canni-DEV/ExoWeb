@@ -1,0 +1,9 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+*.local
+.DS_Store
+*.log
+# Local reference captures are not part of the game's assets.
+docs/capturas/

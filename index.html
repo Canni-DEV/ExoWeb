@@ -1,22 +1,240 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ExoWeb Visual</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script type="importmap">
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
-        }
-    }
-  </script>
-  <!-- Shaders are loaded dynamically via fetch in main.js -->
-</head>
-<body>
-  <canvas id="app"></canvas>
-  <script type="module" src="main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111a20" />
+    <meta
+      name="description"
+      content="Un viaje de gravedad e impulso a través de una costa extraterrestre. Explorá un mundo inmenso, surcá sus nubes y seguí la señal."
+    />
+    <title>ExoWeb — Más allá del horizonte</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='24' fill='%23111a20' stroke='%23bddad7' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='29' ry='8' fill='none' stroke='%23bddad7' stroke-width='2'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <canvas id="app" aria-label="Paisaje tridimensional de ExoWeb"></canvas>
+    <main id="interface">
+      <section id="menu" class="screen">
+        <header class="masthead">
+          <a class="wordmark" href="./" aria-label="ExoWeb inicio"
+            ><span class="orbit-logo" aria-hidden="true">◉</span> EXO<span class="light"
+              >WEB</span
+            ></a
+          ><span class="eyebrow">EXPEDICIÓN 01 <i></i> COSTA DE NÁCAR</span>
+        </header>
+        <div class="menu-content">
+          <p class="eyebrow accent">
+            <span class="tiny-line"></span> UNA SEÑAL. UN MUNDO DESCONOCIDO.
+          </p>
+          <h1>Más allá<br />del <em>horizonte.</em></h1>
+          <p class="intro">La gravedad es el impulso.<br />El cielo, apenas el comienzo.</p>
+          <div class="menu-actions">
+            <button id="begin" class="primary" disabled>
+              <span id="begin-label">Preparando el viaje</span
+              ><span aria-hidden="true">↗</span></button
+            ><button id="continue" class="text-button" hidden>
+              Continuar expedición <span>→</span>
+            </button>
+          </div>
+          <p id="loading" class="status" role="status">
+            <span class="pulse"></span> Estableciendo contacto con la superficie…
+          </p>
+          <div class="menu-links">
+            <button data-open="settings">Ajustes</button><span>/</span
+            ><button data-open="controls">Cómo pilotar</button><span>/</span
+            ><button data-open="credits">Créditos</button>
+          </div>
+        </div>
+        <aside class="planet-stamp" aria-hidden="true">
+          <div class="planet-orbit">
+            <div class="planet-line"></div>
+            <span>01</span>
+          </div>
+          <p>NÁCAR<br /><span>64 × 64 KM · TERRITORIO INEXPLORADO</span></p>
+        </aside>
+        <footer class="menu-footer">
+          <span>UN VIAJE SIN PRISA</span
+          ><span>GRAVEDAD <b>9.8</b> &nbsp; / &nbsp; ESTADO <b id="ready-state">CONECTANDO</b></span
+          ><span>EXOWEB © 2026</span>
+        </footer>
+      </section>
+      <section id="hud" hidden aria-label="Instrumentos de vuelo">
+        <div class="hud-top">
+          <span class="wordmark small">EXO<span class="light">WEB</span></span>
+          <div class="destination">
+            <span id="destination-label" class="eyebrow">LA SEÑAL</span><span id="distance">—</span>
+          </div>
+          <button id="pause" aria-label="Pausar">Ⅱ</button>
+        </div>
+        <div id="reticle" aria-hidden="true"></div>
+        <div id="compass" aria-hidden="true">◇</div>
+        <div class="hud-bottom">
+          <div class="telemetry">
+            <span id="speed">000</span><small>m/s</small>
+            <div><span id="altitude">0 m</span><small>ALTITUD</small></div>
+          </div>
+          <div class="energy">
+            <span id="form-label">ESFERA</span>
+            <div class="energy-track"><div id="energy-fill"></div></div>
+            <small id="energy-label">100</small>
+          </div>
+          <div class="stage">
+            <span id="stage-number">01 / 05</span><small id="stage-name">LA ORILLA</small>
+          </div>
+        </div>
+        <div id="tutorial">
+          <p id="tutorial-text"></p>
+          <button id="dismiss-hint" aria-label="Ocultar ayuda">×</button>
+        </div>
+      </section>
+      <section id="pause-screen" class="modal-screen" hidden>
+        <div class="panel pause-panel">
+          <p class="eyebrow accent">TIEMPO SUSPENDIDO</p>
+          <h2>El horizonte<br />puede esperar.</h2>
+          <button id="resume" class="primary">Continuar <span>→</span></button
+          ><button data-open="settings" class="text-button">Ajustes</button
+          ><button data-open="controls" class="text-button">Controles</button
+          ><button id="respawn" class="text-button">Volver al último checkpoint</button
+          ><button id="return-menu" class="text-button">Volver al inicio</button>
+        </div>
+      </section>
+      <section id="settings" class="modal-screen" hidden>
+        <div class="panel settings-panel">
+          <button class="close" data-close aria-label="Cerrar ajustes">×</button>
+          <p class="eyebrow accent">A TU MANERA</p>
+          <h2>Ajustes del viaje</h2>
+          <label
+            >Calidad visual<select id="quality">
+              <option value="low">Baja</option>
+              <option value="medium" selected>Media</option>
+              <option value="high">Alta</option>
+            </select></label
+          >
+          <label
+            >Sensibilidad<input
+              id="sensitivity"
+              type="range"
+              min="0.2"
+              max="3"
+              step="0.1"
+              value="1"
+          /></label>
+          <label>Invertir cámara vertical<input id="invert" type="checkbox" /></label
+          ><label>Modo de confort<input id="comfort" type="checkbox" /></label>
+          <p class="field-note">
+            Cámara estable, campo de visión fijo y sin desenfoque de movimiento.
+          </p>
+          <label
+            >Música<input id="music" type="range" min="0" max="1" step="0.05" value="0.35" /></label
+          ><label
+            >Ambiente y efectos<input
+              id="effects"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value="0.65"
+          /></label>
+          <details>
+            <summary>Personalizar teclado</summary>
+            <div id="bindings"></div>
+          </details>
+          <details>
+            <summary>Personalizar mando</summary>
+            <div id="gamepad-bindings"></div>
+          </details>
+          <p class="field-note">
+            Los ajustes se guardan en este navegador. F3 muestra el diagnóstico de rendimiento.
+          </p>
+        </div>
+      </section>
+      <section id="controls" class="modal-screen" hidden>
+        <div class="panel">
+          <button class="close" data-close aria-label="Cerrar controles">×</button>
+          <p class="eyebrow accent">EL ARTE DE DEJARSE LLEVAR</p>
+          <h2>Dominá el impulso.</h2>
+          <ol class="instructions">
+            <li>
+              <b>Descendé.</b> Mantené gravedad en las bajadas para ganar velocidad. Soltala al
+              subir.
+            </li>
+            <li><b>Despegá.</b> Saltá o dejá que una pendiente te impulse al cielo.</li>
+            <li><b>Planeá.</b> Transformate en disco. Las nubes ascendentes reponen tu energía.</li>
+            <li>
+              <b>Seguí la señal.</b> El haz de luz marca tu próximo destino. También podés
+              desviarte.
+            </li>
+          </ol>
+          <div id="control-table"></div>
+          <p class="field-note">
+            Click en la escena para capturar el mouse. Esc libera el cursor y pausa. Mantené la
+            tecla de reinicio para regresar al checkpoint.
+          </p>
+        </div>
+      </section>
+      <section id="credits" class="modal-screen" hidden>
+        <div class="panel">
+          <button class="close" data-close aria-label="Cerrar créditos">×</button>
+          <p class="eyebrow accent">EXOWEB</p>
+          <h2>Un mundo<br />hecho de luz.</h2>
+          <p>
+            Experiencia independiente inspirada en la exploración, escala y movimiento de Exo One,
+            de Exbleative.
+          </p>
+          <p>
+            Terreno, materiales, efectos y música originales generados proceduralmente. Motor
+            gráfico Three.js. No se distribuyen recursos del juego original.
+          </p>
+          <a
+            class="text-button"
+            href="https://github.com/Canni-DEV/ExoWeb"
+            target="_blank"
+            rel="noreferrer"
+            >Código y documentación ↗</a
+          >
+          <p class="field-note">
+            Three.js ·
+            <a href="%BASE_URL%THIRD_PARTY_NOTICES.md" target="_blank" rel="noreferrer"
+              >Licencia MIT y atribuciones</a
+            >.
+          </p>
+        </div>
+      </section>
+      <section id="finish" class="modal-screen" hidden>
+        <div class="panel">
+          <p class="eyebrow accent">TRANSMISIÓN COMPLETA</p>
+          <h2>No era el final.<br />Era el comienzo.</h2>
+          <p>
+            La señal encontró respuesta. Nácar sigue ahí: en cada valle, sobre cada nube, más allá
+            de la siguiente costa.
+          </p>
+          <button id="explore" class="primary">Seguir explorando <span>↗</span></button>
+        </div>
+      </section>
+      <section id="error-screen" class="modal-screen" hidden>
+        <div class="panel">
+          <p class="eyebrow accent">NO SE PUDO INICIAR EL VIAJE</p>
+          <h2>Necesitamos<br />volver a conectar.</h2>
+          <p id="error-message"></p>
+          <button id="reload" class="primary">Reintentar <span>↻</span></button
+          ><button id="error-menu" class="text-button">Ver controles y ajustes</button>
+          <details>
+            <summary>Diagnóstico</summary>
+            <pre id="error-detail"></pre>
+          </details>
+        </div>
+      </section>
+      <div id="streaming" hidden role="status">
+        <span class="pulse"></span> Explorando la superficie…
+      </div>
+      <div id="notice" role="status" hidden></div>
+      <pre id="diagnostics" hidden></pre>
+    </main>
+    <noscript>ExoWeb necesita JavaScript y WebGPU para iniciar el viaje.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
