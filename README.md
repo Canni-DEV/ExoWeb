@@ -2,7 +2,7 @@
 
 Una expedición contemplativa por una costa extraterrestre de 64 × 64 km. Rodá, aprovechá la gravedad, transformate en disco y buscá las corrientes entre las nubes. Cinco señales orientan el viaje; al alcanzar la última, la exploración continúa.
 
-Motor renovado con TypeScript estricto, Three.js 0.186.0, WebGPU y shaders TSL/WGSL. Terreno generado por compute, colisiones a 120 Hz, océano Gerstner, nubes volumétricas, postprocesado temporal y audio sintetizado. Todos los escenarios y sonidos se generan localmente, sin CDN, backend ni telemetría.
+Motor con TypeScript estricto, Three.js 0.186.0, WebGPU y shaders TSL/WGSL. Terreno generado por compute, materiales físicos KTX2, monolitos y rocas suspendidas, colisiones a 120 Hz, océano Gerstner, nubes volumétricas y audio sintetizado. Los recursos originales y decodificadores se distribuyen localmente, sin CDN, backend ni telemetría.
 
 ## Ejecutar
 
@@ -16,7 +16,7 @@ npm run dev
 Abrí `http://127.0.0.1:4173/ExoWeb/`. No abras `index.html` directamente: los módulos necesitan el servidor y el build de Vite.
 
 ```sh
-npm run check       # lint, tipos, build y pruebas físicas
+npm run check       # formato, lint, tipos, build, recursos y pruebas unitarias
 npx playwright install chromium
 npm run test:e2e    # interfaz y rutas de producción; no requiere GPU
 npm run build
@@ -27,11 +27,11 @@ Las pruebas gráficas se habilitan expresamente. En PowerShell:
 
 ```powershell
 $env:GPU_TESTS='1'
-npm run test:e2e -- tests/e2e/gpu.spec.ts
-# Opcional: añadir una medición sostenida de diez minutos a 1080p.
-$env:BENCHMARK_SECONDS='600'
-npm run test:e2e -- tests/e2e/gpu.spec.ts
-Remove-Item Env:GPU_TESTS, Env:BENCHMARK_SECONDS
+npm run test:e2e
+# Diez minutos de movimiento y streaming, perfil medio, 1080p nativo.
+$env:ACTIVE_BENCHMARK_SECONDS='600'
+npm run test:e2e -- tests/e2e/acceptance.spec.ts --grep 'sustained'
+Remove-Item Env:GPU_TESTS, Env:ACTIVE_BENCHMARK_SECONDS
 ```
 
 ## Controles
@@ -46,7 +46,7 @@ Remove-Item Env:GPU_TESTS, Env:BENCHMARK_SECONDS
 | Pausa                  | Esc                          | Start           |
 | Regresar al checkpoint | R mantenida / menú           | Menú            |
 
-Los ajustes permiten reasignar teclas y botones del mando, cambiar sensibilidad, invertir la cámara, seleccionar calidad y separar volúmenes. El modo de confort fija el FOV y desactiva motion blur y balanceo. F3 muestra el diagnóstico local.
+Los ajustes permiten reasignar controles, cambiar sensibilidad y calidad, separar volúmenes, elegir HUD contextual/completo/oculto y graduar blur, grano, bloom y lente. El modo de confort fija el FOV y desactiva blur y distorsión. El HUD contextual muestra energía durante uso, recarga o nivel bajo; el completo añade velocidad y altitud. F3 muestra el diagnóstico local.
 
 El disco tiene unos 20 segundos de energía en aire abierto. Un contacto con suelo o agua lo recarga; las corrientes, el rasante y un picado con gravedad también recuperan energía. La gravedad intensificada tiene prioridad sobre el planeo. Soltala y volvé a disco para convertir la caída en avance. Si perdés velocidad, usá las direcciones para rodar o acelerar flotando y saltá de nuevo. Al perder foco o desconectar el mando, el juego se pausa.
 
@@ -70,6 +70,9 @@ La configuración está incluida en el código; el despliegue remoto no se da po
 - [Arquitectura, contratos y parámetros](docs/ARCHITECTURE.md)
 - [Guía de vuelo, correcciones y ajustes](docs/FLIGHT_AND_TUNING.md)
 - [Registro de validación y criterios pendientes](docs/VALIDATION.md)
+- [Renovación gráfica: dirección artística](docs/ART_DIRECTION.md)
+- [Renovación gráfica: pruebas, capturas y rendimiento](docs/VALIDATION_NACAR.md)
+- [Comparativa visual y vídeo](docs/verification/nacar/comparison.html)
 - [Referencias visuales y técnicas](docs/REFERENCES.md)
 - [Avisos de dependencias](THIRD_PARTY_NOTICES.md)
 

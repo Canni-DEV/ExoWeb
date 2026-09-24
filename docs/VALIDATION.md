@@ -1,5 +1,7 @@
 # Registro de validación
 
+La renovación gráfica en `codex/nacar-visual-fidelity` tiene su registro separado en [Validación de Nácar](VALIDATION_NACAR.md). Los resultados de esta página son históricos, anteriores a esa renovación.
+
 ## Actualización: ajuste 2, 24 de septiembre de 2026
 
 Material próximo, contacto estable, recuperación de picados, recarga y guía contextual corregidos. **36 pruebas unitarias y 9 pruebas de navegador aprobadas**, incluyendo WebGPU real, controles de disco/gravedad y benchmark optativo de 60 segundos. Formato, lint, tipos y build correctos.

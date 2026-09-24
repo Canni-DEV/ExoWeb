@@ -1,0 +1,87 @@
+{
+  "browser": "153.0.8010.12",
+  "hardware": "RTX 5070 Ti; not a certification of RTX 3060/RX 6600",
+  "errors": [],
+  "seconds": 604.2868999999929,
+  "meanFps": 98.1537081144746,
+  "results": [
+    {
+      "scene": "rasante",
+      "seconds": 100.80939999999275,
+      "fps": 103.88912145098328,
+      "p95": 14,
+      "max": 21,
+      "memoryMiB": 419.8839874267578,
+      "minScale": 1,
+      "maxScale": 1,
+      "streamingSamples": 0,
+      "samples": 93,
+      "originChanges": 7
+    },
+    {
+      "scene": "pendiente",
+      "seconds": 101.05270000000002,
+      "fps": 100.27441127253402,
+      "p95": 14,
+      "max": 27.800000000017462,
+      "memoryMiB": 416.4049644470215,
+      "minScale": 1,
+      "maxScale": 1,
+      "streamingSamples": 0,
+      "samples": 93,
+      "originChanges": 3
+    },
+    {
+      "scene": "cima",
+      "seconds": 101.10840000000002,
+      "fps": 99.96202095968285,
+      "p95": 14,
+      "max": 21,
+      "memoryMiB": 414.55047607421875,
+      "minScale": 1,
+      "maxScale": 1,
+      "streamingSamples": 0,
+      "samples": 93,
+      "originChanges": 6
+    },
+    {
+      "scene": "nube",
+      "seconds": 100.25339999999997,
+      "fps": 97.17376168788294,
+      "p95": 14,
+      "max": 27.79999999998836,
+      "memoryMiB": 418.6601028442383,
+      "minScale": 1,
+      "maxScale": 1,
+      "streamingSamples": 0,
+      "samples": 92,
+      "originChanges": 5
+    },
+    {
+      "scene": "cielo",
+      "seconds": 100.48280000000004,
+      "fps": 93.44882905333048,
+      "p95": 14,
+      "max": 34.79999999998836,
+      "memoryMiB": 416.0048179626465,
+      "minScale": 1,
+      "maxScale": 1,
+      "streamingSamples": 0,
+      "samples": 92,
+      "originChanges": 7
+    },
+    {
+      "scene": "tormenta",
+      "seconds": 100.5802,
+      "fps": 94.13383548650728,
+      "p95": 14,
+      "max": 27.899999999965075,
+      "memoryMiB": 415.393009185791,
+      "minScale": 1,
+      "maxScale": 1,
+      "streamingSamples": 0,
+      "samples": 92,
+      "originChanges": 3
+    }
+  ]
+}

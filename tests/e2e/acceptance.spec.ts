@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
+import { PHYSICS, WORLD } from '../../src/config';
 
 async function ready(page: Page) {
   await page.goto('./?test=1');
@@ -53,6 +54,11 @@ test.describe('Nácar presentation acceptance', () => {
       expect(snapshot.memoryMiB).toBeLessThan(quality === 'high' ? 1024 : 512);
       reports.push({ quality, memoryMiB: snapshot.memoryMiB, visual: snapshot.visual });
       await page.screenshot({ path: info.outputPath(`${quality}-75.png`) });
+      await page.evaluate(() => window.__EXOWEB_TEST__!.configure({ scale: 1 }));
+      const native = await page.evaluate(() => window.__EXOWEB_TEST__!.snapshot());
+      expect(native.visual.internal).toEqual({ width: 1920, height: 1080 });
+      expect(native.memoryMiB).toBeLessThan(quality === 'high' ? 1024 : 512);
+      reports.push({ quality, memoryMiB: native.memoryMiB, visual: native.visual });
     }
     await page.setViewportSize({ width: 1366, height: 768 });
     await expect
@@ -122,6 +128,49 @@ test.describe('Nácar presentation acceptance', () => {
       expect(visual.internal).toEqual({ width: 1440, height: 810 });
     } finally {
       await context.close();
+    }
+  });
+  test('old saves resume safely at each of the five destinations', async ({ browser, baseURL }) => {
+    test.setTimeout(150000);
+    for (const checkpoint of WORLD.checkpoints) {
+      const context = await browser.newContext({ baseURL });
+      try {
+        const page = await context.newPage();
+        await page.addInitScript(
+          (id) =>
+            localStorage.setItem(
+              'exoweb.save.v1',
+              JSON.stringify({
+                version: 1,
+                checkpoint: id,
+                completed: id === 4,
+                settings: { quality: 'medium' },
+              }),
+            ),
+          checkpoint.id,
+        );
+        await ready(page);
+        await page.locator(checkpoint.id ? '#continue' : '#begin').click();
+        await page.waitForFunction(() => window.__EXOWEB_TEST__!.snapshot().playing);
+        await page.keyboard.press('Escape');
+        const snapshot = await page.evaluate(() => window.__EXOWEB_TEST__!.snapshot());
+        expect(snapshot.checkpoint).toBe(checkpoint.id);
+        expect(
+          Math.hypot(
+            snapshot.player.position.x - checkpoint.x,
+            snapshot.player.position.z - checkpoint.z,
+          ),
+        ).toBeLessThan(15);
+        const height = await page.evaluate(
+          (p) => window.__EXOWEB_TEST__!.sample(p.x, p.z),
+          snapshot.player.position,
+        );
+        expect(snapshot.player.position.y).toBeGreaterThanOrEqual(height + PHYSICS.radius - 0.1);
+        expect(Number.isFinite(snapshot.player.position.y)).toBe(true);
+        await expect(page.locator('#error-screen')).toBeHidden();
+      } finally {
+        await context.close();
+      }
     }
   });
   test('missing local material reports a recoverable error instead of a blank canvas', async ({
@@ -199,6 +248,7 @@ test.describe('Nácar presentation acceptance', () => {
       await page.keyboard.up('w');
       await page.keyboard.up('Control');
       expect(samples.every((x) => x.visual.scale === 1)).toBe(true);
+      expect(samples.every((x, i, all) => i === 0 || x.time > all[i - 1].time)).toBe(true);
       expect(Math.max(...samples.map((x) => x.memoryMiB))).toBeLessThan(512);
       expect(
         Math.hypot(
