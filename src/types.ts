@@ -62,12 +62,40 @@ export interface WorldSampler {
   water(x: number, z: number, time: number): Surface;
   wind(position: Vec3): Vec3;
   ready(x: number, z: number): boolean;
+  obstacles?: readonly Landmark[];
+}
+export interface Landmark {
+  id: string;
+  kind: 'monolith' | 'rock';
+  position: Vec3;
+  scale: Vec3;
+  yaw: number;
+  seed: number;
+}
+export interface EnvironmentState {
+  storm: number;
+  alpine: number;
+  exposure: number;
+  wetness: number;
+}
+export interface VisualEvent {
+  id: number;
+  kind: 'impact' | 'splash' | 'transform' | 'sonic';
+  time: number;
+  position: Vec3;
+  velocity: Vec3;
+  strength: number;
 }
 export type Quality = 'low' | 'medium' | 'high';
 export type Action =
   'forward' | 'backward' | 'left' | 'right' | 'gravity' | 'glide' | 'jump' | 'reset';
 export interface Settings {
   quality: Quality;
+  hud: 'contextual' | 'full' | 'hidden';
+  motionBlur: number;
+  grain: number;
+  bloom: number;
+  lens: number;
   sensitivity: number;
   invertY: boolean;
   comfort: boolean;
@@ -89,6 +117,8 @@ export interface RenderSnapshot {
   checkpoint: number;
   completed: boolean;
   dt: number;
+  events?: readonly VisualEvent[];
+  gravity?: boolean;
 }
 export interface Diagnostics {
   fps: number;

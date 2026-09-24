@@ -17,7 +17,9 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run format:check && npm run lint && npm run build && npm test"
+    "assets:generate": "node scripts/generate-materials.mjs && node scripts/generate-models.mjs",
+    "assets:check": "node scripts/check-assets.mjs",
+    "check": "npm run format:check && npm run lint && npm run build && npm run assets:check && npm test"
   },
   "dependencies": {
     "three": "0.186.0"

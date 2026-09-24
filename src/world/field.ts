@@ -18,15 +18,21 @@ fn exoHash(p: vec2i) -> f32 {
 
 export const terrainHeight = shader<'float'>(
   `fn exoHeight(p: vec2f) -> f32 {
-  let coast = 2500.0 + 1800.0*sin(p.y*0.00018);
+  let coast = 1150.0 + 1250.0*sin(p.y*0.00018)+260.0*sin(p.y*0.0011);
   let land = smoothstep(-1200.0,1200.0,coast-p.x);
   var hills = 0.0; var amplitude = 210.0; var frequency = 0.00065;
   for(var i=0;i<6;i++){ hills += amplitude*exoNoise(p*frequency+vec2f(f32(i)*41.7)); amplitude *= 0.46; frequency *= 2.05; }
   let q = (p-vec2f(-6500.0,-15300.0))/vec2f(4700.0,6500.0);
-  let ridge = exp(-dot(q,q))*3100.0*(0.72+0.28*exoNoise(p*0.0012));
+  let ridgeNoise=abs(exoNoise(p*0.00075+vec2f(exoNoise(p*0.00031)*4.0))*2.0-1.0);
+  let ridgeDetail=1.0-smoothstep(0.0,0.85,ridgeNoise);
+  let ridge = exp(-dot(q,q))*3100.0*(0.72+0.28*ridgeDetail);
   let rolling = 65.0*sin(p.y*0.0022+sin(p.x*0.001))*sin(p.x*0.0014);
   let island = max(0.0,1.0-length(p-vec2f(19000.0,-25000.0))/1900.0);
-  return mix(-160.0,35.0+hills+rolling+ridge,land) + island*island*400.0;
+  let duneWarp=exoNoise(p*0.0018)*90.0;
+  let dunePhase=(p.x*0.86+p.y*0.28+duneWarp)*0.018;
+  let dunes=(sin(dunePhase)*17.0+sin(dunePhase*2.0+0.8)*4.5)*(1.0-smoothstep(700.0,1500.0,hills+ridge));
+  let shore=35.0+hills+rolling+ridge+dunes;
+  return mix(-160.0,shore,land) + island*island*400.0;
 }`,
   [noise2],
 );
