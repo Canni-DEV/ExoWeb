@@ -1,0 +1,68 @@
+[
+  {
+    "scene": "costa",
+    "browser": "153.0.8010.12",
+    "adapter": "nvidia / blackwell",
+    "frames": 1456,
+    "seconds": 10.121299999999993,
+    "fps": 143.85503838439737,
+    "p95": 7,
+    "memoryMiB": 289.520938873291,
+    "diagnostics": "WEBGPU · NÁCAR\n143.9 FPS · p95 7.0 ms\nCPU render 2.0 ms · GPU 2.4 ms\nResolución interna 100%\nSectores 25 · memoria estimada 290 MiB\n0 / 302 / 0 m"
+  },
+  {
+    "scene": "pendiente",
+    "browser": "153.0.8010.12",
+    "adapter": "nvidia / blackwell",
+    "frames": 1454,
+    "seconds": 10.107299999999999,
+    "fps": 143.8564206068881,
+    "p95": 7,
+    "memoryMiB": 291.930721282959,
+    "diagnostics": "WEBGPU · NÁCAR\n143.9 FPS · p95 7.0 ms\nCPU render 1.9 ms · GPU 2.6 ms\nResolución interna 100%\nSectores 25 · memoria estimada 292 MiB\n-3200 / 700 / -6400 m"
+  },
+  {
+    "scene": "cima",
+    "browser": "153.0.8010.12",
+    "adapter": "nvidia / blackwell",
+    "frames": 1457,
+    "seconds": 10.1283,
+    "fps": 143.85434870610075,
+    "p95": 7.099999999998545,
+    "memoryMiB": 286.77161026000977,
+    "diagnostics": "WEBGPU · NÁCAR\n143.9 FPS · p95 7.1 ms\nCPU render 1.8 ms · GPU 5.5 ms\nResolución interna 100%\nSectores 25 · memoria estimada 287 MiB\n-6000 / 4200 / -16000 m"
+  },
+  {
+    "scene": "nube",
+    "browser": "153.0.8010.12",
+    "adapter": "nvidia / blackwell",
+    "frames": 1312,
+    "seconds": 10.093499999999997,
+    "fps": 129.98464358250362,
+    "p95": 13.900000000001455,
+    "memoryMiB": 286.671817779541,
+    "diagnostics": "WEBGPU · NÁCAR\n129.8 FPS · p95 13.9 ms\nCPU render 2.0 ms · GPU 6.8 ms\nResolución interna 100%\nSectores 25 · memoria estimada 287 MiB\n-3800 / 2700 / -9800 m"
+  },
+  {
+    "scene": "cielo",
+    "browser": "153.0.8010.12",
+    "adapter": "nvidia / blackwell",
+    "frames": 1457,
+    "seconds": 10.128200000000005,
+    "fps": 143.85576904089567,
+    "p95": 7.099999999998545,
+    "memoryMiB": 287.4897270202637,
+    "diagnostics": "WEBGPU · NÁCAR\n143.9 FPS · p95 7.1 ms\nCPU render 2.3 ms · GPU 5.2 ms\nResolución interna 100%\nSectores 25 · memoria estimada 287 MiB\n-5900 / 5800 / -14600 m"
+  },
+  {
+    "scene": "oceano",
+    "browser": "153.0.8010.12",
+    "adapter": "nvidia / blackwell",
+    "frames": 1163,
+    "seconds": 10.100400000000002,
+    "fps": 115.14395469486357,
+    "p95": 13.900000000001455,
+    "memoryMiB": 284.9151496887207,
+    "diagnostics": "WEBGPU · NÁCAR\n115.1 FPS · p95 13.9 ms\nCPU render 1.7 ms · GPU 7.8 ms\nResolución interna 100%\nSectores 25 · memoria estimada 285 MiB\n10000 / 80 / -22600 m"
+  }
+]
