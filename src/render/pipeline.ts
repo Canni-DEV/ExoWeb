@@ -17,6 +17,7 @@ import {
   float,
   fract,
   int,
+  ivec2,
   length,
   max,
   mix,
@@ -104,18 +105,31 @@ export class AtmospherePipeline {
       target.textures[1].name = 'meta';
     }
     const coords = uv();
-    const depth = texture(this.sceneTarget.depthTexture!).r;
+    // Resolve to the unjittered output grid. The scene's sample shift must not
+    // move the cloud rays or survive into the final image as camera vibration.
+    const sceneUV = coords.sub(this.u.projectionJitter);
+    const depth = texture(this.sceneTarget.depthTexture!).sample(sceneUV).r;
     const view = this.u.inverseProjection.mul(
-      vec4(coords.x.mul(2).sub(1), float(1).sub(coords.y.mul(2)), depth, 1),
+      vec4(sceneUV.x.mul(2).sub(1), float(1).sub(sceneUV.y.mul(2)), depth, 1),
     );
     const viewPoint = view.xyz.div(view.w);
-    const ray = normalize(this.u.cameraWorld.mul(vec4(normalize(viewPoint), 0)).xyz);
+    const cloudView = this.u.cloudInverseProjection.mul(
+      vec4(coords.x.mul(2).sub(1), float(1).sub(coords.y.mul(2)), 1, 1),
+    );
+    const ray = normalize(this.u.cameraWorld.mul(vec4(normalize(cloudView.xyz), 0)).xyz);
     const sceneDistance = length(viewPoint).min(100000);
     const jitter = fract(
       sin(dot(coords.mul(this.u.resolution), vec2(12.9898, 78.233)))
         .mul(43758.5453)
         .add(this.u.frame.mul(0.61803398875)),
     );
+    // Stable per-pixel strata avoid coherent density flashes when the camera is
+    // still. Clouds keep their own stable grid, separate from geometry AA.
+    const cloudJitter = shader<'float'>(`fn exoCloudJitter(uv:vec2f,size:vec2f)->f32 {
+      let p=vec2u(floor(uv*size));var h=p.x*374761393u+p.y*668265263u;
+      h=(h^(h>>13u))*1274126177u;h=h^(h>>16u);
+      return (f32(h&65535u)+.5)/65536.0;
+    }`)(coords, this.u.cloudResolution);
     this.cloudMaterial.outputNode = clouds(
       this.u.eye,
       ray,
@@ -125,7 +139,7 @@ export class AtmospherePipeline {
       this.u.storm,
       this.u.cloudSteps,
       this.u.shadowSteps,
-      jitter,
+      cloudJitter,
       this.u.cloudNoise,
       sampler(this.u.cloudNoise),
     );
@@ -138,7 +152,7 @@ export class AtmospherePipeline {
       this.u.storm,
       this.u.cloudSteps,
       this.u.shadowSteps,
-      jitter,
+      cloudJitter,
       this.u.cloudNoise,
       sampler(this.u.cloudNoise),
     );
@@ -146,34 +160,66 @@ export class AtmospherePipeline {
 
     // World-space reprojection of the cloud layer, with scene-depth disocclusion rejection.
     const currentMeta = texture(this.cloudTarget.textures[1]);
-    const anchor = currentMeta.r.mul(100000).max(1);
+    const rawCloud = texture(this.cloudTarget.texture);
+    const tolerance = sceneDistance.mul(0.02).max(10);
+    let filteredCloud: Node<'vec4'> = rawCloud.mul(0.4);
+    let filteredDepth: Node<'float'> = currentMeta.r.mul(rawCloud.a).mul(0.4);
+    let filterWeight: Node<'float'> = float(0.4);
+    for (const offset of [vec2(1, 0), vec2(-1, 0), vec2(0, 1), vec2(0, -1)]) {
+      const sampleUV = coords.add(offset.div(this.u.cloudResolution));
+      const sampleMeta = currentMeta.sample(sampleUV);
+      const sampleCloud = rawCloud.sample(sampleUV);
+      const sampleDistance = sampleMeta.g.mul(100000);
+      const w = float(1)
+        .sub(smoothstep(tolerance, tolerance.mul(3), sampleDistance.sub(sceneDistance).abs()))
+        .mul(0.15);
+      filteredCloud = filteredCloud.add(sampleCloud.mul(w));
+      filteredDepth = filteredDepth.add(sampleMeta.r.mul(sampleCloud.a).mul(w));
+      filterWeight = filterWeight.add(w);
+    }
+    const currentCloud = filteredCloud.div(filterWeight);
+    // Reproject the same filtered volume as the color. An empty center texel
+    // must not anchor its cloudy neighbors one metre in front of the camera.
+    const anchor = filteredDepth.div(filteredCloud.a.max(0.00001)).mul(100000).max(1);
     const anchorWorld = this.u.eye
       .add(ray.mul(anchor))
       .add(vec3(7, 0, -3).mul(this.u.delta))
       .sub(this.u.origin);
-    const previousClip = this.u.previousViewProjection.mul(vec4(anchorWorld, 1));
+    const previousClip = this.u.previousCloudViewProjection.mul(vec4(anchorWorld, 1));
     const previousUV = previousClip.xy.div(previousClip.w).mul(vec2(0.5, -0.5)).add(0.5);
     const inBounds = previousUV
       .greaterThan(0)
       .all()
       .and(previousUV.lessThan(1).all())
       .and(previousClip.w.greaterThan(0));
-    const rawCloud = texture(this.cloudTarget.texture);
-    const currentCloud = rawCloud
-      .mul(0.4)
-      .add(rawCloud.sample(coords.add(vec2(1, 0).div(this.u.cloudResolution))).mul(0.15))
-      .add(rawCloud.sample(coords.add(vec2(-1, 0).div(this.u.cloudResolution))).mul(0.15))
-      .add(rawCloud.sample(coords.add(vec2(0, 1).div(this.u.cloudResolution))).mul(0.15))
-      .add(rawCloud.sample(coords.add(vec2(0, -1).div(this.u.cloudResolution))).mul(0.15));
-    const oldCloud = this.historyTexture.sample(previousUV);
-    const oldDistance = this.historyMeta.sample(previousUV).g.mul(100000);
-    const depthReject = float(1).sub(smoothstep(60, 800, oldDistance.sub(sceneDistance).abs()));
-    const alphaReject = float(1).sub(smoothstep(0.25, 0.7, oldCloud.a.sub(currentCloud.a).abs()));
+    // Validate each texel before interpolation: bilinear metadata cannot describe
+    // a mixture of a foreground mountain and the sky behind it.
+    const gatherCloud =
+      shader<'vec4'>(`fn exoGatherCloud(uv:vec2f,distance:f32,col:texture_2d<f32>,metadata:texture_2d<f32>)->vec4f {
+      let dimensions=vec2i(textureDimensions(col));let p=uv*vec2f(dimensions)-.5;
+      let base=vec2i(floor(p));let f=fract(p);let tolerance=max(10.0,distance*.02);
+      var color=vec4f(0.0);var total=0.0;
+      for(var y=0;y<2;y++){for(var x=0;x<2;x++){
+        let pixel=clamp(base+vec2i(x,y),vec2i(0),dimensions-1);
+        let sampleDepth=textureLoad(metadata,pixel,0).g*100000.0;
+        let compatible=1.0-smoothstep(tolerance,tolerance*3.0,abs(sampleDepth-distance));
+        let bilinear=select(1.0-f.x,f.x,x==1)*select(1.0-f.y,f.y,y==1);
+        let w=bilinear*compatible;color+=textureLoad(col,pixel,0)*w;total+=w;
+      }}
+      return color/max(total,.00001);
+    }`);
+    const oldCloud = gatherCloud(previousUV, sceneDistance, this.historyTexture, this.historyMeta);
+    const oldDistance = this.historyMeta
+      .load(ivec2(previousUV.mul(this.u.cloudResolution).clamp(0, this.u.cloudResolution.sub(1))))
+      .g.mul(100000);
+    const depthReject = float(1).sub(
+      smoothstep(tolerance, tolerance.mul(3), oldDistance.sub(sceneDistance).abs()),
+    );
     const historyWeight = float(inBounds)
       .mul(this.u.historyValid)
       .mul(depthReject)
-      .mul(alphaReject)
-      .mul(0.86);
+      .mul(smoothstep(0.001, 0.04, currentCloud.a))
+      .mul(0.9);
     const limited = oldCloud.clamp(currentCloud.sub(0.2), currentCloud.add(0.2));
     this.historyMaterial.outputNode = mix(currentCloud, limited, historyWeight);
     this.historyMRT = mrt({
@@ -181,31 +227,26 @@ export class AtmospherePipeline {
       meta: currentMeta,
     });
 
-    // Four depth-aware taps prevent a low-resolution cloud silhouette bleeding across mountains.
-    const motion = texture(this.sceneTarget.textures[1]).xy.mul(vec2(0.5, -0.5));
+    // Upsample unfiltered texels only after testing their individual depths.
+    const motion = texture(this.sceneTarget.textures[1])
+      .sample(sceneUV)
+      .xy.mul(vec2(0.5, -0.5))
+      .add(this.u.projectionJitter)
+      .sub(this.u.previousProjectionJitter);
     const color = motionBlur(
       this.resolvedColor,
       motion.clamp(-0.025, 0.025).mul(this.u.blur).mul(this.u.historyValid),
       int(8),
     );
     const offsets = [vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(-0.5, 0.5), vec2(0.5, 0.5)];
-    let total: Node<'vec4'> = vec4(0),
-      weight: Node<'float'> = float(0);
-    for (const offset of offsets) {
-      const sampleUV = coords.add(offset.div(this.u.cloudResolution));
-      const sampleDepth = this.resolvedMeta.sample(sampleUV).g.mul(100000);
-      const w = float(1).div(float(1).add(sampleDepth.sub(sceneDistance).abs().mul(0.01)));
-      total = total.add(this.resolvedCloud.sample(sampleUV).mul(w));
-      weight = weight.add(w);
-    }
-    const cloud = total.div(weight.max(0.0001));
+    const cloud = gatherCloud(coords, sceneDistance, this.resolvedCloud, this.resolvedMeta);
     this.compositeMaterial.outputNode = vec4(
       color.rgb.mul(float(1).sub(cloud.a)).add(cloud.rgb),
       1,
     );
 
     // Motion-vector temporal resolve with depth rejection and neighbourhood clamping.
-    const current = texture(this.sceneTarget.texture);
+    const current = texture(this.sceneTarget.texture).sample(sceneUV);
     const contactAO =
       shader<'float'>(`fn exoContactAO(uv:vec2f,depth:texture_depth_2d,ip:mat4x4f,quality:i32)->f32 {
       if(quality==0){return 1.0;}
@@ -222,7 +263,7 @@ export class AtmospherePipeline {
         occlusion+=smoothstep(.15,1.2,dz)*(1.0-smoothstep(1.5,5.0,length(point-center)));
       }
       return 1.0-occlusion*.035*(1.0-smoothstep(160.0,280.0,-center.z));
-    }`)(coords, texture(this.sceneTarget.depthTexture!), this.u.inverseProjection, this.u.quality);
+    }`)(sceneUV, texture(this.sceneTarget.depthTexture!), this.u.inverseProjection, this.u.quality);
     const previousSceneUV = coords.sub(motion);
     const valid = previousSceneUV.greaterThan(0).all().and(previousSceneUV.lessThan(1).all());
     const oldDepth = this.previousDepth.sample(previousSceneUV).r.mul(100000);
@@ -238,7 +279,7 @@ export class AtmospherePipeline {
     let minimum = current.rgb,
       maximum = current.rgb;
     for (const offset of offsets) {
-      const neighbor = current.sample(coords.add(offset.mul(2).div(this.u.resolution))).rgb;
+      const neighbor = current.sample(sceneUV.add(offset.mul(2).div(this.u.resolution))).rgb;
       minimum = minimum.min(neighbor);
       maximum = maximum.max(neighbor);
     }
@@ -247,7 +288,7 @@ export class AtmospherePipeline {
       .mul(float(valid))
       .mul(reject)
       .mul(float(1).sub(motion.length().mul(40).saturate()))
-      .mul(mix(0.3, 0.72, smoothstep(80, 1800, sceneDistance)));
+      .mul(mix(0.3, 0.88, smoothstep(80, 1800, sceneDistance)));
     this.temporalMaterial.outputNode = vec4(
       mix(current.rgb.mul(contactAO), oldColor, temporalWeight),
       1,
@@ -331,6 +372,18 @@ export class AtmospherePipeline {
       return value;
     };
     const sample = (this.frame % 8) + 1;
+    camera.coordinateSystem = r.coordinateSystem;
+    camera.clearViewOffset();
+    camera.updateProjectionMatrix();
+    u.cloudInverseProjection.value.copy(camera.projectionMatrixInverse);
+    const cloudViewProjection = new Matrix4().multiplyMatrices(
+      camera.projectionMatrix,
+      camera.matrixWorldInverse,
+    );
+    u.projectionJitter.value.set(
+      (halton(sample, 2) - 0.5) / this.width,
+      (halton(sample, 3) - 0.5) / this.height,
+    );
     camera.setViewOffset(
       this.width,
       this.height,
@@ -340,12 +393,13 @@ export class AtmospherePipeline {
       this.height,
     );
     camera.updateProjectionMatrix();
-    u.inverseProjection.value.copy(camera.projectionMatrixInverse);
-    u.cameraWorld.value.copy(camera.matrixWorld);
     r.setMRT(this.sceneMRT);
     r.setRenderTarget(this.sceneTarget);
     camera.layers.set(0);
     r.render(scene, camera);
+    // The renderer selects the WebGPU projection on the first render.
+    u.inverseProjection.value.copy(camera.projectionMatrixInverse);
+    u.cameraWorld.value.copy(camera.matrixWorld);
     r.copyTextureToTexture(this.sceneTarget.texture, this.opaqueTarget.texture);
     r.copyTextureToTexture(this.sceneTarget.depthTexture!, this.opaqueTarget.depthTexture!);
     r.autoClear = false;
@@ -383,6 +437,8 @@ export class AtmospherePipeline {
     u.previousViewProjection.value.copy(
       new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse),
     );
+    u.previousCloudViewProjection.value.copy(cloudViewProjection);
+    u.previousProjectionJitter.value.copy(u.projectionJitter.value);
     u.historyValid.value = 1;
     camera.clearViewOffset();
     camera.updateProjectionMatrix();

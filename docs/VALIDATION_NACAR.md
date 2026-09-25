@@ -10,7 +10,7 @@ La paleta y la composición siguen la [lectura de las diez referencias](ART_DIRE
 
 [Abrir comparativa interactiva](verification/nacar/comparison.html) · [Vídeo de movimiento, 65 s](verification/nacar/motion.webm) · [Métricas detalladas](verification/nacar/benchmark-summary.json).
 
-El código gráfico medido corresponde a `06fc2e4`. Los commits posteriores de validación no modifican el render.
+El benchmark de diez minutos de este documento corresponde a `06fc2e4`. La corrección posterior del parpadeo modifica la reconstrucción temporal y tiene su [informe, comparación y vídeo propios](verification/nacar/flicker/index.html), con medición de regresión separada.
 
 ## Reproducción
 

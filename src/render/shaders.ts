@@ -103,16 +103,21 @@ export const cloudShadow = shader<'float'>(
 const cloudMarchSource = (
   depth: boolean,
 ) => `fn ${depth ? 'exoCloudDepth' : 'exoClouds'}(ro:vec3f,rd:vec3f,sceneDistance:f32,sun:vec3f,t:f32,storm:f32,steps:i32,lightSteps:i32,jitter:f32,volume:texture_3d<f32>,sm:sampler)->vec4f {
- var start=0.0;var finish=min(sceneDistance,42000.0);
+ // Keep the integration lattice independent of opaque depth. Clipping the entire
+ // lattice to a mountain made every cloud sample jump at its silhouette.
+ var start=0.0;var finish=42000.0;
  if(abs(rd.y)>0.00001){let a=(0.0-ro.y)/rd.y;let b=(6800.0-ro.y)/rd.y;start=max(0.0,min(a,b));finish=min(finish,max(a,b));}
- else if(ro.y<0.0||ro.y>6800.0){return vec4f(0.0);}
- if(finish<=start){return vec4f(0.0);}
+ else if(ro.y<0.0||ro.y>6800.0){finish=0.0;}
+ let end=min(finish,sceneDistance);
+ if(end<=start){return ${depth ? 'vec4f(0.0,sceneDistance/100000.0,0.0,1.0)' : 'vec4f(0.0)'};}
  let span=finish-start;var transmittance=1.0;var color=vec3f(0.0);var depth=0.0;var weight=0.0;
  let mu=dot(rd,sun);let phase=0.32+0.09/pow(max(0.08,1.0+0.69*0.69-1.38*mu),1.5);
  for(var i=0;i<96;i++){
   if(i>=steps||transmittance<0.012){break;}
-  let f=(f32(i)+jitter)/f32(steps);let fnxt=(f32(i)+1.0)/f32(steps);let fbase=f32(i)/f32(steps);
-  let distance=start+span*f*f;let ds=max(1.0,span*(fnxt*fnxt-fbase*fbase));
+  let fnxt=(f32(i)+1.0)/f32(steps);let fbase=f32(i)/f32(steps);
+  let left=start+span*fbase*fbase;let right=min(end,start+span*fnxt*fnxt);
+  if(left>=end){break;}
+  let ds=right-left;let distance=left+ds*jitter;
   let p=ro+rd*distance;let density=exoCloudDensity(p,t,storm,volume,sm);
   if(density>0.000005){var optical=0.0;
    ${depth ? '' : `for(var j=0;j<7;j++){if(j>=lightSteps){break;}let step=100.0+f32(j)*100.0;optical+=exoCloudDensity(p+sun*(f32(j)+0.5)*step,t,storm,volume,sm)*step;}`}
