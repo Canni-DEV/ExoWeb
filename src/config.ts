@@ -78,6 +78,11 @@ export const WORLD: WorldDefinition = {
 };
 export const DEFAULT_SETTINGS: Settings = {
   quality: 'medium',
+  hud: 'contextual',
+  motionBlur: 0.35,
+  grain: 0.22,
+  bloom: 0.4,
+  lens: 0.45,
   sensitivity: 1,
   invertY: false,
   comfort: false,
@@ -96,7 +101,31 @@ export const DEFAULT_SETTINGS: Settings = {
   gamepad: { gravity: 7, glide: 6, jump: 0, pause: 9 },
 };
 export const PROFILES = {
-  low: { cloudScale: 0.25, cloudSteps: 32, shadowSteps: 3, particles: 128 },
-  medium: { cloudScale: 0.5, cloudSteps: 64, shadowSteps: 5, particles: 256 },
-  high: { cloudScale: 0.5, cloudSteps: 96, shadowSteps: 7, particles: 512 },
+  low: {
+    cloudScale: 0.5,
+    cloudSteps: 32,
+    shadowSteps: 3,
+    particles: 128,
+    textureSize: 1024,
+    cascades: 1,
+    shadowSize: 1024,
+  },
+  medium: {
+    cloudScale: 0.5,
+    cloudSteps: 64,
+    shadowSteps: 5,
+    particles: 512,
+    textureSize: 2048,
+    cascades: 2,
+    shadowSize: 2048,
+  },
+  high: {
+    cloudScale: 0.66,
+    cloudSteps: 96,
+    shadowSteps: 7,
+    particles: 1024,
+    textureSize: 4096,
+    cascades: 3,
+    shadowSize: 2048,
+  },
 } as const;

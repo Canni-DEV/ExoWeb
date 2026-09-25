@@ -1,0 +1,24 @@
+{
+  "commit": "9922fac",
+  "viewport": [
+    1920,
+    1080
+  ],
+  "time": 30,
+  "form": "disc",
+  "yaw": 0,
+  "pitch": 0.15,
+  "boomMeters": 65,
+  "settleFrames": 35,
+  "changes": [
+    "camera distance only",
+    "freeze menu time to 30s",
+    "set disc/morph=1 at spawn",
+    "hide HUD with CSS"
+  ],
+  "presets": [
+    "costa",
+    "cielo",
+    "oceano"
+  ]
+}

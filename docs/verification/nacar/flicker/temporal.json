@@ -1,0 +1,118 @@
+{
+  "baseline": "0012df1",
+  "branch": "codex/nacar-visual-fidelity",
+  "viewport": [
+    1920,
+    1080
+  ],
+  "quality": "medium",
+  "scale": 1,
+  "time": 30,
+  "frozen": true,
+  "settleFrames": 180,
+  "captures": 16,
+  "units": "absolute RGB difference averaged per pixel, 8-bit output (0–255); p99 across adjacent captures",
+  "regions": {
+    "sky": [
+      700,
+      30,
+      880,
+      150
+    ],
+    "horizon": [
+      1200,
+      275,
+      380,
+      60
+    ],
+    "foreground": [
+      100,
+      500,
+      500,
+      300
+    ],
+    "mountain": [
+      80,
+      145,
+      870,
+      220
+    ]
+  },
+  "before": {
+    "clouds": [
+      {
+        "name": "sky",
+        "meanDelta": 0.7549769360232244,
+        "p99": 5.666666666666667,
+        "maximumValue": 232
+      },
+      {
+        "name": "horizon",
+        "meanDelta": 1.0863226120852907,
+        "p99": 10.666666666666666,
+        "maximumValue": 211
+      },
+      {
+        "name": "foreground",
+        "meanDelta": 0,
+        "p99": 0,
+        "maximumValue": 0
+      }
+    ],
+    "final": [
+      {
+        "name": "mountain",
+        "meanDelta": 2.187891907582343,
+        "p99": 28.333333333333332,
+        "maximumValue": 254
+      }
+    ]
+  },
+  "after": {
+    "clouds": [
+      {
+        "name": "sky",
+        "meanDelta": 0.00010993265993266075,
+        "p99": 0,
+        "maximumValue": 232
+      },
+      {
+        "name": "horizon",
+        "meanDelta": 0.00005847953216374268,
+        "p99": 0,
+        "maximumValue": 212
+      },
+      {
+        "name": "foreground",
+        "meanDelta": 0,
+        "p99": 0,
+        "maximumValue": 0
+      }
+    ],
+    "final": [
+      {
+        "name": "mountain",
+        "meanDelta": 1.223261000813516,
+        "p99": 6.333333333333333,
+        "maximumValue": 254
+      }
+    ]
+  },
+  "clearSkyTransition": {
+    "scene": "cielo",
+    "settleFrames": 35,
+    "region": [
+      350,
+      150,
+      400,
+      150
+    ],
+    "maximumCloudRGB": 0
+  },
+  "sourceSha256": {
+    "src/render/pipeline.ts": "60ab01ed1b14e97abe267e5b898889577dbaea68a359d5c1f7a07b70089e07e5",
+    "src/render/shaders.ts": "8fc7358303505701bbcd85d9f73c988b963e2b9de599c22e0b0c2430ddbb41d9",
+    "src/render/uniforms.ts": "b8d20b77b6a063c400e52c84ab34ad7f4005cd269d85a25bc490a2c3634d11da",
+    "tests/e2e/temporal.spec.ts": "848f8681d862b491891e8982459807409ced9967cb98b5600353acb9657dc430"
+  }
+}

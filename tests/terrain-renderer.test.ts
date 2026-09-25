@@ -5,6 +5,36 @@ import { createUniforms } from '../src/render/uniforms';
 import type { TerrainStream } from '../src/world/stream';
 import { tileKey, type HeightTile } from '../src/world/tiles';
 
+it('keeps distant land behind the ocean through the visible horizon', () => {
+  const stream = { ready: () => false, onTile: null } as unknown as TerrainStream;
+  const scene = new Scene();
+  const renderer = new TerrainRenderer(scene, stream, createUniforms());
+  try {
+    for (const [x, z] of [
+      [0, 0],
+      [-6500, -15000],
+      [19000, -25000],
+    ]) {
+      renderer.update(x, z);
+      for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+        const px = x + Math.cos(angle) * 90000;
+        const pz = z + Math.sin(angle) * 90000;
+        expect(
+          scene.children.some(
+            ({ userData: p }) =>
+              px >= p.worldX &&
+              px < p.worldX + p.patchSize &&
+              pz >= p.worldZ &&
+              pz < p.worldZ + p.patchSize,
+          ),
+        ).toBe(true);
+      }
+    }
+  } finally {
+    renderer.dispose();
+  }
+});
+
 it('recycles near geometry while replacing canonical heights and all skirt samples', () => {
   const tiles = new Map<string, HeightTile>();
   const stream = {

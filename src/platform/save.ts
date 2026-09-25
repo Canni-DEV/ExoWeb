@@ -7,6 +7,9 @@ export function cleanSettings(value: unknown): Settings {
   if (!value || typeof value !== 'object') return d;
   const s = value as Record<string, unknown>;
   if (s.quality === 'low' || s.quality === 'medium' || s.quality === 'high') d.quality = s.quality;
+  if (s.hud === 'contextual' || s.hud === 'full' || s.hud === 'hidden') d.hud = s.hud;
+  for (const name of ['motionBlur', 'grain', 'bloom', 'lens'] as const)
+    if (typeof s[name] === 'number' && Number.isFinite(s[name])) d[name] = clamp(s[name], 0, 1);
   for (const name of ['sensitivity', 'music', 'effects'] as const)
     if (typeof s[name] === 'number' && Number.isFinite(s[name]))
       d[name] = clamp(s[name], name === 'sensitivity' ? 0.2 : 0, name === 'sensitivity' ? 3 : 1);

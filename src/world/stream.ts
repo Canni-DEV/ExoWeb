@@ -2,9 +2,10 @@ import { StorageBufferAttribute, Vector2, type WebGPURenderer } from 'three/webg
 import { Fn, float, instanceIndex, storage, uniform, vec2 } from 'three/tsl';
 import { terrainHeight, waterSurface, windAt } from './field';
 import { sampleTile, TILE_SAMPLES, TILE_SIZE, tileKey, type HeightTile } from './tiles';
-import type { Vec3, WorldSampler } from '../types';
+import type { Vec3, WorldSampler, Landmark } from '../types';
 
 export class TerrainStream implements WorldSampler {
+  obstacles: Landmark[] = [];
   readonly tiles = new Map<string, HeightTile>();
   readonly pending = new Map<string, { x: number; z: number }>();
   onTile: ((tile: HeightTile) => void) | null = null;

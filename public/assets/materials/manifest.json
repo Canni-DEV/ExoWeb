@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "license": "Original ExoWeb assets",
+  "seed": 7319,
+  "layout": "RG: tangent slope, B: height, A: roughness",
+  "files": [
+    {
+      "kind": "sand",
+      "size": 1024,
+      "path": "assets/materials/sand-1024.ktx2",
+      "bytes": 1048537,
+      "sha256": "28085d151071ca6ddd8fff619fb7d64e2dfa3b3422040e0ecf1c0b360ed00c4d"
+    },
+    {
+      "kind": "rock",
+      "size": 1024,
+      "path": "assets/materials/rock-1024.ktx2",
+      "bytes": 1154596,
+      "sha256": "34e5201119494b8421eb791c93a1cc363a75e9e7b49c8be135034e02d2d83e4f"
+    },
+    {
+      "kind": "wet",
+      "size": 1024,
+      "path": "assets/materials/wet-1024.ktx2",
+      "bytes": 1156722,
+      "sha256": "880b1a496dca03882dc677b7deb7fb3b5c0e7e57d736233877fe64ff6d7f0f4c"
+    },
+    {
+      "kind": "snow",
+      "size": 1024,
+      "path": "assets/materials/snow-1024.ktx2",
+      "bytes": 1076867,
+      "sha256": "05e7a84af6db489036c46fdcf00c4143a4ab28e283a8b13c112bb65f6ea405be"
+    },
+    {
+      "kind": "sand",
+      "size": 2048,
+      "path": "assets/materials/sand-2048.ktx2",
+      "bytes": 3698727,
+      "sha256": "27d6ea9ebcc2ba6343e621b7a91a4c45ec3af896a732a984ac6bdba65b15c44f"
+    },
+    {
+      "kind": "rock",
+      "size": 2048,
+      "path": "assets/materials/rock-2048.ktx2",
+      "bytes": 4226328,
+      "sha256": "3472fdee3b842f9dc6341d0bd8ece1693158968c11620a931d4f5b201e0213e3"
+    },
+    {
+      "kind": "wet",
+      "size": 2048,
+      "path": "assets/materials/wet-2048.ktx2",
+      "bytes": 4132154,
+      "sha256": "3547366223f43c9caae4f09b34091bbd12356f67f58db3d0c767067706029737"
+    },
+    {
+      "kind": "snow",
+      "size": 2048,
+      "path": "assets/materials/snow-2048.ktx2",
+      "bytes": 4051604,
+      "sha256": "7bf0f668ed5f1608fa100f22a82cf3c57442bd23c626def7dcdf236f0a40b91f"
+    },
+    {
+      "kind": "sand",
+      "size": 4096,
+      "path": "assets/materials/sand-4096.ktx2",
+      "bytes": 13114949,
+      "sha256": "ae27d9f880039681bfff3601fd92ced8340cc165ae671c20671707c629d3236b"
+    },
+    {
+      "kind": "rock",
+      "size": 4096,
+      "path": "assets/materials/rock-4096.ktx2",
+      "bytes": 15467526,
+      "sha256": "732761ad33ba2bbe3d36a3ea33d33a21060249b822c10a51478fded170e1f5db"
+    }
+  ]
+}

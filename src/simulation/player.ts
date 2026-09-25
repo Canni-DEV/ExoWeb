@@ -1,6 +1,7 @@
 import { PHYSICS, WORLD } from '../config';
 import type { InputFrame, PlayerState, Vec3, WorldSampler } from '../types';
 import { clamp, dot, length, normalize, smooth } from './math';
+import { sweepLandmarks } from '../world/landmarks';
 
 export const createPlayer = (position: Vec3): PlayerState => ({
   position: { ...position },
@@ -275,10 +276,24 @@ export function simulate(
         PHYSICS.radius +
         0.005;
     }
+    const obstacle =
+      world.obstacles && sweepLandmarks(old, target, PHYSICS.radius, world.obstacles);
+    if (obstacle) {
+      const f = Math.max(0, obstacle.fraction - 0.002);
+      target.x = old.x + (target.x - old.x) * f;
+      target.y = old.y + (target.y - old.y) * f;
+      target.z = old.z + (target.z - old.z) * f;
+      const vn = dot(v, obstacle.normal);
+      if (vn < 0) {
+        v.x -= obstacle.normal.x * vn;
+        v.y -= obstacle.normal.y * vn;
+        v.z -= obstacle.normal.z * vn;
+      }
+    }
     p.position = target;
   }
   // The signal pillars are solid capsules; nearby contacts are inexpensive on CPU.
-  for (const cp of WORLD.checkpoints) {
+  for (const cp of world.obstacles ? [] : WORLD.checkpoints) {
     const cx = cp.x + 100,
       cz = cp.z + 100,
       dx = p.position.x - cx,

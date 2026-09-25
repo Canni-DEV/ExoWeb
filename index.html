@@ -127,8 +127,33 @@
           <label>Invertir cámara vertical<input id="invert" type="checkbox" /></label
           ><label>Modo de confort<input id="comfort" type="checkbox" /></label>
           <p class="field-note">
-            Cámara estable, campo de visión fijo y sin desenfoque de movimiento.
+            Cámara estable, campo de visión fijo y sin desenfoque ni distorsión de lente.
           </p>
+          <label
+            >Instrumentos de vuelo<select id="hud-mode">
+              <option value="contextual">Contextuales</option>
+              <option value="full">Completos</option>
+              <option value="hidden">Ocultos</option>
+            </select></label
+          >
+          <details>
+            <summary>Imagen y efectos</summary>
+            <label
+              >Desenfoque de movimiento<input
+                id="motionBlur"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+            /></label>
+            <label
+              >Grano cinematográfico<input id="grain" type="range" min="0" max="1" step="0.05"
+            /></label>
+            <label>Resplandor<input id="bloom" type="range" min="0" max="1" step="0.05" /></label>
+            <label
+              >Efectos de lente<input id="lens" type="range" min="0" max="1" step="0.05"
+            /></label>
+          </details>
           <label
             >Música<input id="music" type="range" min="0" max="1" step="0.05" value="0.35" /></label
           ><label

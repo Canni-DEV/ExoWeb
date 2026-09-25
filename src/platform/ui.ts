@@ -32,6 +32,8 @@ export class UI {
   private noticeTimer = 0;
   private lastHint = -1;
   private nearBoundary = false;
+  private hintUntil = 9;
+  private dismissed = false;
   constructor(readonly settings: Settings) {
     document
       .querySelectorAll<HTMLButtonElement>('[data-open]')
@@ -39,7 +41,10 @@ export class UI {
     document
       .querySelectorAll<HTMLButtonElement>('[data-close]')
       .forEach((button) => (button.onclick = () => this.close()));
-    element('dismiss-hint').onclick = () => (element('tutorial').hidden = true);
+    element('dismiss-hint').onclick = () => {
+      this.dismissed = true;
+      element('tutorial').hidden = true;
+    };
     element('reload').onclick = () => location.reload();
     element('error-menu').onclick = () => {
       element('error-screen').hidden = true;
@@ -84,7 +89,21 @@ export class UI {
       settings.quality = select.value as Settings['quality'];
       this.onSettings();
     };
-    for (const key of ['sensitivity', 'music', 'effects'] as const) {
+    const hud = element<HTMLSelectElement>('hud-mode');
+    hud.value = settings.hud;
+    hud.onchange = () => {
+      settings.hud = hud.value as Settings['hud'];
+      this.onSettings();
+    };
+    for (const key of [
+      'sensitivity',
+      'music',
+      'effects',
+      'motionBlur',
+      'grain',
+      'bloom',
+      'lens',
+    ] as const) {
       const input = element<HTMLInputElement>(key);
       input.value = String(settings[key]);
       input.oninput = () => {
@@ -247,6 +266,13 @@ export class UI {
     element('reload').focus();
   }
   update(player: PlayerState, checkpoint: number, completed: boolean, yaw: number) {
+    element('hud').dataset.mode = this.settings.hud;
+    element('hud').dataset.energy =
+      player.form === 'disc' ||
+      player.energy < 99 ||
+      ['thermal', 'dive', 'skim'].includes(player.energySource)
+        ? 'active'
+        : 'idle';
     const nearBoundary = Math.max(Math.abs(player.position.x), Math.abs(player.position.z)) > 29500;
     if (nearBoundary && !this.nearBoundary)
       this.notice(
@@ -280,8 +306,10 @@ export class UI {
     element('compass').style.opacity = completed ? '0' : '0.8';
     if (this.lastHint !== checkpoint) {
       this.lastHint = checkpoint;
-      element('tutorial').hidden = completed;
+      this.hintUntil = player.time + 9;
+      this.dismissed = false;
     }
+    element('tutorial').hidden = completed || this.dismissed || player.time > this.hintUntil;
   }
   stats(d: Diagnostics) {
     element('diagnostics').textContent =

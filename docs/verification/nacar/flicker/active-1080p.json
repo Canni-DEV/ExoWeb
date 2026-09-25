@@ -1,0 +1,2479 @@
+{
+  "hardware": "RTX 5070 Ti; not a certification of RTX 3060/RX 6600",
+  "duration": 60,
+  "errors": [],
+  "results": [
+    {
+      "scene": "rasante",
+      "browser": "153.0.8010.12",
+      "adapter": "nvidia / blackwell",
+      "frames": 1257,
+      "seconds": 10.75380000000001,
+      "fps": 116.88891368632473,
+      "p95": 14,
+      "max": 21,
+      "samples": [
+        {
+          "time": 2.348599999999995,
+          "position": {
+            "x": 134.2386024904908,
+            "y": 243.8038394368489,
+            "z": -750.9748266622692
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.731982932579971,
+            "invalidations": 8,
+            "camera": {
+              "x": 132.34181292218153,
+              "y": 264.9217387558676,
+              "z": -661.7904087933836,
+              "fov": 71.16361572803683
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 46,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 392.8766326904297,
+          "streaming": false
+        },
+        {
+          "time": 3.415266666666658,
+          "position": {
+            "x": 149.94195189247532,
+            "y": 214.14250610351547,
+            "z": -866.0098638762149
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 0.4132276808625754,
+            "invalidations": 8,
+            "camera": {
+              "x": 148.11900955886176,
+              "y": 236.49539170559382,
+              "z": -777.2047271454695,
+              "fov": 71.37543050838721
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 51,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 397.7843360900879,
+          "streaming": false
+        },
+        {
+          "time": 4.481933333333346,
+          "position": {
+            "x": 165.53528708958294,
+            "y": 173.33095054796007,
+            "z": -980.1925676654585
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": -0.938004305477951,
+            "invalidations": 8,
+            "camera": {
+              "x": 163.7770103594079,
+              "y": 196.87068166799963,
+              "z": -891.6061221945148,
+              "fov": 71.6565109819767
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 51,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 397.7843360900879,
+          "streaming": false
+        },
+        {
+          "time": 5.565266666666734,
+          "position": {
+            "x": 195.31875863034628,
+            "y": 154.31452288230975,
+            "z": -1109.963629941789
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 118,
+            "shipRoll": 2.9171382906004686,
+            "invalidations": 8,
+            "camera": {
+              "x": 190.94270915441902,
+              "y": 173.64233098197062,
+              "z": -1015.8536789486681,
+              "fov": 73.23998424475583
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 56,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 400.90435791015625,
+          "streaming": false
+        },
+        {
+          "time": 6.631933333333453,
+          "position": {
+            "x": 234.04583154947454,
+            "y": 147.0249934065148,
+            "z": -1251.975316417117
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 120,
+            "shipRoll": -0.9494473191493236,
+            "invalidations": 8,
+            "camera": {
+              "x": 229.60816022897487,
+              "y": 167.1295216503161,
+              "z": -1157.784184799675,
+              "fov": 74.43470800758502
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 56,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 400.90435791015625,
+          "streaming": false
+        },
+        {
+          "time": 7.706933333333507,
+          "position": {
+            "x": 273.5798291688431,
+            "y": 130.2642475709761,
+            "z": -1394.413061105875
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 83,
+            "shipRoll": 2.024676741578071,
+            "invalidations": 8,
+            "camera": {
+              "x": 268.5409752113817,
+              "y": 150.6489477366638,
+              "z": -1299.3262652091178,
+              "fov": 74.65943024481828
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 66,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 399.0077667236328,
+          "streaming": false
+        },
+        {
+          "time": 8.781933333333477,
+          "position": {
+            "x": 322.3468222860056,
+            "y": 125.47773564202066,
+            "z": -1547.1367436894127
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 61,
+            "shipRoll": -2.9366537234753696,
+            "invalidations": 8,
+            "camera": {
+              "x": 316.6753096817858,
+              "y": 145.3499686853943,
+              "z": -1450.2612022063702,
+              "fov": 75.9788312499857
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 71,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 399.7547416687012,
+          "streaming": false
+        },
+        {
+          "time": 9.848600000000083,
+          "position": {
+            "x": 370.8397994167718,
+            "y": 110.75350429425691,
+            "z": -1698.901415757661
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 54,
+            "shipRoll": -1.7540679734358304,
+            "invalidations": 8,
+            "camera": {
+              "x": 365.38551323209214,
+              "y": 131.85062622480865,
+              "z": -1602.7299537402257,
+              "fov": 76.14298766011969
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 72,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 400.00669860839844,
+          "streaming": false
+        },
+        {
+          "time": 10.931933333333355,
+          "position": {
+            "x": 421.9497109386367,
+            "y": 90.14373218092794,
+            "z": -1852.9444874426097
+          },
+          "origin": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 69,
+            "shipRoll": 0.9086739701561197,
+            "invalidations": 8,
+            "camera": {
+              "x": 415.4203974161219,
+              "y": 110.57002070517693,
+              "z": -1755.0268801900177,
+              "fov": 76.41398437964666
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 76,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 400.37709045410156,
+          "streaming": false
+        },
+        {
+          "time": 11.99859999999996,
+          "position": {
+            "x": 479.7740366458144,
+            "y": 78.85623429958724,
+            "z": -2014.2006249768574
+          },
+          "origin": {
+            "x": 256,
+            "y": 0,
+            "z": -2048
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 76,
+            "shipRoll": 0.47269688590056474,
+            "invalidations": 9,
+            "camera": {
+              "x": 473.1218769606794,
+              "y": 99.75535832364258,
+              "z": -1915.4240947657738,
+              "fov": 77.50454122618096
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 79,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 399.4235954284668,
+          "streaming": false
+        }
+      ]
+    },
+    {
+      "scene": "pendiente",
+      "browser": "153.0.8010.12",
+      "adapter": "nvidia / blackwell",
+      "frames": 1169,
+      "seconds": 10.844199999999997,
+      "fps": 107.79956105567958,
+      "p95": 14,
+      "max": 14.299999999999272,
+      "samples": [
+        {
+          "time": 2.3417999999999934,
+          "position": {
+            "x": -3197.983990872214,
+            "y": 691.8992322716148,
+            "z": -6652.702265350204
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 5.253339150762796e-12,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.9839971811384,
+              "y": 710.7215324875482,
+              "z": -6563.980894180994,
+              "fov": 71.07287845786965
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 33,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.7171440124512,
+          "streaming": false
+        },
+        {
+          "time": 3.425133333333323,
+          "position": {
+            "x": -3197.983936705529,
+            "y": 687.7845626566325,
+            "z": -6770.205501375437
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.1874276967314558e-17,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.983942900817,
+              "y": 706.5837981716671,
+              "z": -6681.842629778689,
+              "fov": 70.91975460072629
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.2300033569336,
+          "streaming": false
+        },
+        {
+          "time": 4.491800000000012,
+          "position": {
+            "x": -3197.9838833721774,
+            "y": 683.7668154605423,
+            "z": -6884.940909599617
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 3.2782178164126246e-23,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.983889384502,
+              "y": 702.5351149398421,
+              "z": -6797.168807136909,
+              "fov": 70.81093934375977
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.2300033569336,
+          "streaming": false
+        },
+        {
+          "time": 5.583466666666733,
+          "position": {
+            "x": -3197.9838287888256,
+            "y": 679.6890345484532,
+            "z": -7001.39070986649
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 6.704711471981256e-29,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.983835151041,
+              "y": 698.4662441217109,
+              "z": -6913.0710639981135,
+              "fov": 70.70723279483529
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 40,
+            "pendingSectors": 3
+          },
+          "memoryMiB": 398.89464569091797,
+          "streaming": false
+        },
+        {
+          "time": 6.66680000000012,
+          "position": {
+            "x": -3197.9837746221406,
+            "y": 675.6761108822316,
+            "z": -7115.988372274687
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.5154856505432665e-34,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.9837809263468,
+              "y": 694.4319107138962,
+              "z": -7027.99056075697,
+              "fov": 70.60589041145825
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 43,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 398.6248970031738,
+          "streaming": false
+        },
+        {
+          "time": 7.750133333333507,
+          "position": {
+            "x": -3197.9837204554556,
+            "y": 671.6963872908228,
+            "z": -7229.637935396031
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 3.4254967817785463e-40,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.9837267112935,
+              "y": 690.4317596688211,
+              "z": -7141.937398231899,
+              "fov": 70.50639962459182
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 45,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 402.26391983032227,
+          "streaming": false
+        },
+        {
+          "time": 8.825133333333472,
+          "position": {
+            "x": -3197.9836667054374,
+            "y": 667.779706364997,
+            "z": -7341.487179887533
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 8.557063351980647e-46,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.9836728364844,
+              "y": 686.48946820649,
+              "z": -7254.237093598383,
+              "fov": 70.40928233662842
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 48,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 403.53260040283203,
+          "streaming": false
+        },
+        {
+          "time": 9.900133333333411,
+          "position": {
+            "x": -3197.983612955419,
+            "y": 663.8949481041775,
+            "z": -7452.424804266815
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.137597489489241e-51,
+            "invalidations": 15,
+            "camera": {
+              "x": -3197.983618960742,
+              "y": 682.579374587983,
+              "z": -7365.620622648481,
+              "fov": 70.31385625630179
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 50,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 401.66346740722656,
+          "streaming": false
+        },
+        {
+          "time": 10.991800000000016,
+          "position": {
+            "x": -3200.5770052534904,
+            "y": 710.1507888690227,
+            "z": -7543.747612852804
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 107,
+            "shipRoll": 4.371879848411181e-57,
+            "invalidations": 15,
+            "camera": {
+              "x": -3200.505823581414,
+              "y": 721.6338555957391,
+              "z": -7459.310332309663,
+              "fov": 69.67955648613697
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 50,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 401.66346740722656,
+          "streaming": false
+        },
+        {
+          "time": 12.075133333333287,
+          "position": {
+            "x": -3200.5769510868054,
+            "y": 760.2915832332397,
+            "z": -7632.571671651973
+          },
+          "origin": {
+            "x": -3328,
+            "y": 0,
+            "z": -6400
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 107,
+            "shipRoll": 9.881888585158964e-63,
+            "invalidations": 15,
+            "camera": {
+              "x": -3200.5769452488903,
+              "y": 773.0455882546515,
+              "z": -7548.898642585964,
+              "fov": 69.2850502404662
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 53,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 401.3937187194824,
+          "streaming": false
+        }
+      ]
+    },
+    {
+      "scene": "cima",
+      "browser": "153.0.8010.12",
+      "adapter": "nvidia / blackwell",
+      "frames": 1178,
+      "seconds": 10.809400000000002,
+      "fps": 108.97922178844337,
+      "p95": 14,
+      "max": 20.799999999995634,
+      "samples": [
+        {
+          "time": 2.3069999999999946,
+          "position": {
+            "x": -5997.983990872216,
+            "y": 4192.539328712163,
+            "z": -16252.451510784436
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 3.146236383988765e-12,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.983997102811,
+              "y": 4211.352199310343,
+              "z": -16163.937208101182,
+              "fov": 70.98085767582117
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 33,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.50151443481445,
+          "streaming": false
+        },
+        {
+          "time": 3.390333333333324,
+          "position": {
+            "x": -5997.983936705531,
+            "y": 4188.431161608065,
+            "z": -16369.773546602697
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 7.111530620043849e-18,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.983942834915,
+              "y": 4207.2221846554785,
+              "z": -16281.590187723286,
+              "fov": 70.89199611355096
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 33,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.50151443481445,
+          "streaming": false
+        },
+        {
+          "time": 4.465333333333345,
+          "position": {
+            "x": -5997.983882955513,
+            "y": 4184.388380495345,
+            "z": -16485.223852174346
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.7764961382806586e-23,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.983889303277,
+              "y": 4203.178625417068,
+              "z": -16396.770603696437,
+              "fov": 70.79077810646247
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 397.7461624145508,
+          "streaming": false
+        },
+        {
+          "time": 5.532000000000065,
+          "position": {
+            "x": -5997.9838296221615,
+            "y": 4180.40996036046,
+            "z": -16598.836191884588
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 4.904501812892123e-29,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.983835761391,
+              "y": 4199.167640971778,
+              "z": -16511.024145072475,
+              "fov": 70.689551598284
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 397.7461624145508,
+          "streaming": false
+        },
+        {
+          "time": 6.615333333333452,
+          "position": {
+            "x": -5997.9837754554765,
+            "y": 4176.402648904039,
+            "z": -16713.27358561455
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.108578967426479e-34,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.98378153785,
+              "y": 4195.1391842102485,
+              "z": -16625.77642298384,
+              "fov": 70.58863466874308
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 40,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 398.3164520263672,
+          "streaming": false
+        },
+        {
+          "time": 7.698666666666839,
+          "position": {
+            "x": -5997.9837212887915,
+            "y": 4172.428470904826,
+            "z": -16826.76478246617
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.5057536400331446e-40,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.9837276707985,
+              "y": 4191.17028749224,
+              "z": -16738.8331356348,
+              "fov": 70.49008302917592
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 43,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 398.04670333862305,
+          "streaming": false
+        },
+        {
+          "time": 8.773666666666811,
+          "position": {
+            "x": -5997.983667538773,
+            "y": 4168.517227838022,
+            "z": -16938.45873723936
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 6.259498697028437e-46,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.98367379835,
+              "y": 4187.233575216571,
+              "z": -16850.974073451798,
+              "fov": 70.39324569136312
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 45,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 396.1918754577637,
+          "streaming": false
+        },
+        {
+          "time": 9.84866666666675,
+          "position": {
+            "x": -5997.983613788755,
+            "y": 4164.637843374803,
+            "z": -17049.242901311685
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.5636542759885152e-51,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.983619936453,
+              "y": 4183.329823388189,
+              "z": -16962.177119090047,
+              "fov": 70.29812464826595
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 48,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 396.94774627685547,
+          "streaming": false
+        },
+        {
+          "time": 10.932000000000022,
+          "position": {
+            "x": -5997.98355962207,
+            "y": 4160.760235498837,
+            "z": -17159.976331335874
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 3.5343737423711297e-57,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.983565686303,
+              "y": 4179.430084140084,
+              "z": -17073.26688599124,
+              "fov": 70.20404062592608
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 50,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 401.4877624511719,
+          "streaming": false
+        },
+        {
+          "time": 12.015333333333293,
+          "position": {
+            "x": -5997.983505455385,
+            "y": 4156.914221308796,
+            "z": -17269.807535950433
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -16128
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 7.988848905149055e-63,
+            "invalidations": 21,
+            "camera": {
+              "x": -5997.9835114723155,
+              "y": 4175.564793566573,
+              "z": -17183.37635542075,
+              "fov": 70.11164862464253
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 53,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 400.70520401000977,
+          "streaming": false
+        }
+      ]
+    },
+    {
+      "scene": "nube",
+      "browser": "153.0.8010.12",
+      "adapter": "nvidia / blackwell",
+      "frames": 1139,
+      "seconds": 10.844200000000004,
+      "fps": 105.03310525442167,
+      "p95": 14,
+      "max": 21,
+      "samples": [
+        {
+          "time": 2.338999999999994,
+          "position": {
+            "x": -3797.9839896222134,
+            "y": 2768.355,
+            "z": -10054.779034355995
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.7224992568879133e-12,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.983995800324,
+              "y": 2780.064282234083,
+              "z": -9965.148042317433,
+              "fov": 72.13030204241743
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 30,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 392.0954818725586,
+          "streaming": false
+        },
+        {
+          "time": 3.4139999999999904,
+          "position": {
+            "x": -3797.983935872195,
+            "y": 2846.000279507283,
+            "z": -10170.44793930634
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 6.800940155840821e-18,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.983941895401,
+              "y": 2854.786819026645,
+              "z": -10079.897979011814,
+              "fov": 73.62250886138904
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 33,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 391.82573318481445,
+          "streaming": false
+        },
+        {
+          "time": 4.497333333333346,
+          "position": {
+            "x": -3797.98388170551,
+            "y": 2953.1352435000485,
+            "z": -10285.641445151623
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.5372365029361186e-23,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.9838880252673,
+              "y": 2958.360995380044,
+              "z": -10192.988962232157,
+              "fov": 75.64432586139496
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 35,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 393.413516998291,
+          "streaming": false
+        },
+        {
+          "time": 5.564000000000066,
+          "position": {
+            "x": -3797.9838283721588,
+            "y": 3084.8273255840263,
+            "z": -10397.73283026845
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 4.243960374037718e-29,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.9838345035755,
+              "y": 3087.8592679471158,
+              "z": -10303.974038644088,
+              "fov": 77.86084035538543
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.1693878173828,
+          "streaming": false
+        },
+        {
+          "time": 6.639000000000119,
+          "position": {
+            "x": -3797.9837746221406,
+            "y": 3240.252129848432,
+            "z": -10509.380516259034
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.0601626595323215e-34,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.9837806131086,
+              "y": 3241.5254831800808,
+              "z": -10414.562491707467,
+              "fov": 79.95214137875973
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 40,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.61505126953125,
+          "streaming": false
+        },
+        {
+          "time": 7.73066666666684,
+          "position": {
+            "x": -3797.9837200387888,
+            "y": 3416.645198539133,
+            "z": -10621.419639664668
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.1682771382503602e-40,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.983726037187,
+              "y": 3416.244599600308,
+              "z": -10525.531380559401,
+              "fov": 81.66922174151848
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 43,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.37092208862305,
+          "streaming": false
+        },
+        {
+          "time": 8.822333333333473,
+          "position": {
+            "x": -3797.983665455437,
+            "y": 3606.2702327021143,
+            "z": -10732.124955177556
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 4.434626805605581e-46,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.983671833766,
+              "y": 3603.43053216104,
+              "z": -10634.82055042592,
+              "fov": 82.84813115817337
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 43,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.37092208862305,
+          "streaming": false
+        },
+        {
+          "time": 9.905666666666745,
+          "position": {
+            "x": -3797.983611288752,
+            "y": 3801.8939996277504,
+            "z": -10840.682317352073
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.0023717377704162e-51,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.9836176014946,
+              "y": 3798.7276831451663,
+              "z": -10743.295725962762,
+              "fov": 83.47793132992257
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 45,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 396.2630195617676,
+          "streaming": false
+        },
+        {
+          "time": 10.989000000000017,
+          "position": {
+            "x": -3797.983557122067,
+            "y": 3999.5075051914973,
+            "z": -10947.957210792525
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.26569031561085e-57,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.9835633843686,
+              "y": 3996.5160199186566,
+              "z": -10850.872369259325,
+              "fov": 83.58755023489688
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 48,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 397.53170013427734,
+          "streaming": false
+        },
+        {
+          "time": 12.072333333333289,
+          "position": {
+            "x": -3797.983502955382,
+            "y": 4194.222495399477,
+            "z": -11053.964827603768
+          },
+          "origin": {
+            "x": -3840,
+            "y": 0,
+            "z": -9984
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 5.121206447491177e-63,
+            "invalidations": 27,
+            "camera": {
+              "x": -3797.9835091515,
+              "y": 4191.934384028603,
+              "z": -10957.578085050714,
+              "fov": 83.22752172283974
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 50,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 398.93660736083984,
+          "streaming": false
+        }
+      ]
+    },
+    {
+      "scene": "cielo",
+      "browser": "153.0.8010.12",
+      "adapter": "nvidia / blackwell",
+      "frames": 1127,
+      "seconds": 10.878900000000002,
+      "fps": 103.59503258601511,
+      "p95": 14,
+      "max": 20.900000000001455,
+      "samples": [
+        {
+          "time": 2.340333333333328,
+          "position": {
+            "x": -5897.983989205549,
+            "y": 5887.968611111129,
+            "z": -14855.680949792864
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.1090498750141636e-12,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983995355677,
+              "y": 5897.90378877752,
+              "z": -14765.324135685789,
+              "fov": 72.98911227514039
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 393.90342712402344,
+          "streaming": false
+        },
+        {
+          "time": 3.4236666666666573,
+          "position": {
+            "x": -5897.983935038864,
+            "y": 5988.403012213196,
+            "z": -14972.23053736947
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 4.767147453284443e-18,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983941101187,
+              "y": 5994.50378356902,
+              "z": -14880.0661425139,
+              "fov": 75.32088967711526
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 39,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.1553840637207,
+          "streaming": false
+        },
+        {
+          "time": 4.49866666666668,
+          "position": {
+            "x": -5897.983881288846,
+            "y": 6124.7007525487215,
+            "z": -15086.522253056968
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.1908574249128221e-23,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983887574794,
+              "y": 6126.5714322297945,
+              "z": -14991.695353278845,
+              "fov": 78.35742737160045
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 393.90342712402344,
+          "streaming": false
+        },
+        {
+          "time": 5.590333333333401,
+          "position": {
+            "x": -5897.983826705494,
+            "y": 6290.715500192103,
+            "z": -15201.214592617109
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.4355780748712993e-29,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983832991291,
+              "y": 6290.452599699895,
+              "z": -15105.10553446387,
+              "fov": 80.74856927899108
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 39,
+            "pendingSectors": 3
+          },
+          "memoryMiB": 396.33124923706055,
+          "streaming": false
+        },
+        {
+          "time": 6.682000000000122,
+          "position": {
+            "x": -5897.983772122142,
+            "y": 6462.830075083369,
+            "z": -15314.541454006705
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 4.981318867141502e-35,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983778400872,
+              "y": 6462.814091001097,
+              "z": -15218.836553724668,
+              "fov": 81.14896955682227
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 40,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 394.53196716308594,
+          "streaming": false
+        },
+        {
+          "time": 7.773666666666843,
+          "position": {
+            "x": -5897.98371753879,
+            "y": 6625.566926657612,
+            "z": -15426.519136339875
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.0187945897587822e-40,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.98372386441,
+              "y": 6626.592503852297,
+              "z": -15331.795941726281,
+              "fov": 80.20158443730146
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 41,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.44760513305664,
+          "streaming": false
+        },
+        {
+          "time": 8.848666666666807,
+          "position": {
+            "x": -5897.983663788772,
+            "y": 6774.408937950221,
+            "z": -15535.484454927098
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.5450001569392023e-46,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983669994801,
+              "y": 6776.950878325452,
+              "z": -15442.068306223075,
+              "fov": 79.0065314749217
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 43,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 396.46432876586914,
+          "streaming": false
+        },
+        {
+          "time": 9.932000000000079,
+          "position": {
+            "x": -5897.983609622087,
+            "y": 6912.947610506083,
+            "z": -15644.002128214905
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 5.752538695505327e-52,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983615756066,
+              "y": 6916.849126277958,
+              "z": -15551.779968583825,
+              "fov": 77.78419123195347
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 45,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 396.25825119018555,
+          "streaming": false
+        },
+        {
+          "time": 11.01533333333335,
+          "position": {
+            "x": -5897.983555455402,
+            "y": 7039.984894173057,
+            "z": -15751.237802922586
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.300263237825674e-57,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.983561538202,
+              "y": 7045.171536519761,
+              "z": -15660.141569917114,
+              "fov": 76.58355930581874
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 48,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.9885025024414,
+          "streaming": false
+        },
+        {
+          "time": 12.098666666666622,
+          "position": {
+            "x": -5897.983501288717,
+            "y": 7155.520788951143,
+            "z": -15857.206665585561
+          },
+          "origin": {
+            "x": -6144,
+            "y": 0,
+            "z": -14848
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.939023233275946e-63,
+            "invalidations": 33,
+            "camera": {
+              "x": -5897.9835073291715,
+              "y": 7161.956864437757,
+              "z": -15767.189507645986,
+              "fov": 75.42219156832641
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 48,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.9885025024414,
+          "streaming": false
+        }
+      ]
+    },
+    {
+      "scene": "tormenta",
+      "browser": "153.0.8010.12",
+      "adapter": "nvidia / blackwell",
+      "frames": 1162,
+      "seconds": 10.837199999999998,
+      "fps": 107.22326800280518,
+      "p95": 14,
+      "max": 21,
+      "samples": [
+        {
+          "time": 2.372233333333322,
+          "position": {
+            "x": 15002.016549590378,
+            "y": 39.38204447330404,
+            "z": -24258.411558365966
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.8249153221606117e-12,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.016531054425,
+              "y": 57.26012348442329,
+              "z": -24170.048408390856,
+              "fov": 70.98655500948225
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 33,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 392.47270584106445,
+          "streaming": false
+        },
+        {
+          "time": 3.4555666666666514,
+          "position": {
+            "x": 15002.016712090433,
+            "y": 45.01328907434446,
+            "z": -24374.957264943085
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 4.124909767930116e-18,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.0166937696,
+              "y": 62.56694742406891,
+              "z": -24286.999648895653,
+              "fov": 70.82192354066342
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 35,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 392.71306228637695,
+          "streaming": false
+        },
+        {
+          "time": 4.530566666666676,
+          "position": {
+            "x": 15002.016873340488,
+            "y": 53.92530184599519,
+            "z": -24489.255554709405
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.0304232189945237e-23,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.01685429432,
+              "y": 70.99628098421925,
+              "z": -24401.035302027634,
+              "fov": 70.69959177003653
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 38,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 391.93050384521484,
+          "streaming": false
+        },
+        {
+          "time": 5.613900000000063,
+          "position": {
+            "x": 15002.017035840543,
+            "y": 67.33779267879714,
+            "z": -24603.094579996054
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 2.3290959035278954e-29,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.017017011312,
+              "y": 83.84548387473625,
+              "z": -24515.254911265438,
+              "fov": 70.60538894035292
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 40,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 399.5392532348633,
+          "streaming": false
+        },
+        {
+          "time": 6.688900000000117,
+          "position": {
+            "x": 15002.017197090598,
+            "y": 86.22621887574927,
+            "z": -24714.738704355274
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 5.818198780778774e-35,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.017178589882,
+              "y": 102.06808153305508,
+              "z": -24627.30743019052,
+              "fov": 70.55454589935435
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 43,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 400.80793380737305,
+          "streaming": false
+        },
+        {
+          "time": 7.76390000000017,
+          "position": {
+            "x": 15002.017358340652,
+            "y": 111.92664563794072,
+            "z": -24825.084193930747
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.4534153360271956e-40,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.01734025245,
+              "y": 127.0105724946676,
+              "z": -24738.05055396652,
+              "fov": 70.56631520711653
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 43,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 400.80793380737305,
+          "streaming": false
+        },
+        {
+          "time": 8.847233333333467,
+          "position": {
+            "x": 15002.017520840707,
+            "y": 145.85707517554357,
+            "z": -24934.98678418475
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 3.2851974245809692e-46,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.01750183759,
+              "y": 159.8116108690807,
+              "z": -24847.375328748694,
+              "fov": 70.65924127839833
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 45,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.2326316833496,
+          "streaming": false
+        },
+        {
+          "time": 9.930566666666738,
+          "position": {
+            "x": 15002.017683340762,
+            "y": 188.39954463348425,
+            "z": -25043.60147046292
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 7.42562834652428e-52,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.017664500065,
+              "y": 201.42255612061962,
+              "z": -24956.078417797195,
+              "fov": 70.83264927574002
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 48,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 395.9885025024414,
+          "streaming": false
+        },
+        {
+          "time": 11.01390000000001,
+          "position": {
+            "x": 15002.017845840817,
+            "y": 238.79545824711667,
+            "z": -25150.94350925606
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 1.6784366116973363e-57,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.017827194051,
+              "y": 251.0798710999171,
+              "z": -25063.528017435052,
+              "fov": 71.03247882810761
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 50,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 396.2431640625,
+          "streaming": false
+        },
+        {
+          "time": 12.08889999999995,
+          "position": {
+            "x": 15002.018007090872,
+            "y": 293.89745697283087,
+            "z": -25256.216703701244
+          },
+          "origin": {
+            "x": 14848,
+            "y": 0,
+            "z": -24064
+          },
+          "visual": {
+            "scale": 1,
+            "quality": "medium",
+            "assetsLoading": false,
+            "historyValid": 1,
+            "effects": 0,
+            "shipRoll": 4.192819124800101e-63,
+            "invalidations": 39,
+            "camera": {
+              "x": 15002.01798883699,
+              "y": 305.9072299570954,
+              "z": -25169.146807085617,
+              "fov": 71.14213233640531
+            },
+            "internal": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "width": 1920,
+              "height": 1080
+            },
+            "sectors": 53,
+            "pendingSectors": 0
+          },
+          "memoryMiB": 397.51184463500977,
+          "streaming": false
+        }
+      ]
+    }
+  ]
+}
